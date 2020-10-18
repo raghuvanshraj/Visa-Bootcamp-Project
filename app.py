@@ -16,6 +16,15 @@ class UserCredentials(db.Model):
     password = db.Column('password', db.Text)
 
 
+class User(db.Model):
+    __tablename__ = 'user'
+    username = db.Column('username', db.Text, primary_key=True)
+    email = db.Column('email', db.Text)
+    fname = db.Column('fname', db.Text)
+    lname = db.Column('lname', db.Text)
+    points = db.Column('points', db.Integer)
+
+
 @app.route('/')
 def hello_world():
     return 'Hello World!'
@@ -32,6 +41,22 @@ def login():
             response['status'] = 'SUCCESS'
         else:
             response['status'] = 'INCORRECT_PASSWORD'
+    else:
+        response['status'] = 'INCORRECT_USERNAME'
+
+    return json.dumps(response)
+
+
+@app.route('/user', methods=['GET'])
+def get_user_details():
+    request_body = request.get_json()
+    user_details = User.query.get(request_body['username'])
+    response = dict()
+    if user_details is not None:
+        response['status'] = 'SUCCESS'
+        user_details_dict = user_details.__dict__
+        _ = user_details_dict.pop('_sa_instance_state')
+        response['response'] = user_details_dict
     else:
         response['status'] = 'INCORRECT_USERNAME'
 
