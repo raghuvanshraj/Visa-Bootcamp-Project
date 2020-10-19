@@ -137,16 +137,16 @@ def login():
     if login_form.validate_on_submit():
         username = login_form.username.data
         user = User.query.get(username)
-        user_password = UserCredentials.query.get(username).password
-
-        if user_password == login_form.password.data:
-            login_user(user)
-            session.permanent = True
-            print(user)
-            print("redirecting")
-            return redirect(url_for('home'))
-        else:
-            print("some shit happened")
+        user_credentials = UserCredentials.query.get(username)
+        if user_credentials is not None:
+            if user_credentials.password == login_form.password.data:
+                login_user(user)
+                session.permanent = True
+                print(user)
+                print("redirecting")
+                return redirect(url_for('home'))
+            else:
+                print('some shit happened')
 
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
