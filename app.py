@@ -126,7 +126,7 @@ def register():
     except Exception as e:
         flash(str(e) + ". Please contact the system administrator.")
 
-    return render_template("Register.html", registrationform=registration_form)
+    return render_template("register.html", registrationform=registration_form)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -148,13 +148,13 @@ def login():
         else:
             print("some shit happened")
 
-    return render_template("Login.html", registration_form=registration_form, loginform=login_form)
+    return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
 
 @app.route('/home')
 @login_required
 def home():
-    return render_template("Home.html")
+    return render_template("home.html")
 
 
 @app.route('/logout', methods=['GET', 'POST'])
