@@ -1,6 +1,11 @@
+import os
+
 from flask import Flask
 from flask import redirect, url_for, render_template, request, flash, session,jsonify
+from flask_bootstrap import Bootstrap
+from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, BooleanField
 from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
@@ -9,6 +14,8 @@ from flask_bootstrap import Bootstrap
 import json
 import os
 import random
+from wtforms import StringField, PasswordField
+from wtforms.validators import InputRequired, Length
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
@@ -25,6 +32,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
 login_manager.login_view = 'login'
+
 
 @login_manager.user_loader
 def load_user(username):
@@ -45,17 +53,17 @@ class User(db.Model):
     __tablename__ = 'user'
     username = db.Column('username', db.Text, primary_key=True)
     email = db.Column('email', db.Text)
-    fname = db.Column('fname', db.Text)
-    lname = db.Column('lname', db.Text)
+    first_name = db.Column('first_name', db.Text)
+    last_name = db.Column('last_name', db.Text)
     points = db.Column('points', db.Integer)
-    
+
     def get_id(self):
         return (self.username)
-    
+
     def is_active(self):
         """True, as all users are active."""
         return True
-    
+
     def is_authenticated(self):
         """Return True if the user is authenticated."""
         return True
@@ -67,99 +75,63 @@ class RegistrationForm(FlaskForm):
     last_name = StringField('Last Name', validators=[InputRequired()])
     email = StringField('Email', validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8)])
-    password2 = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8)])
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8)])
 
 
 class LoginForm(FlaskForm):
-    user_login = StringField('username or email', validators=[InputRequired()])
+    username = StringField('username or email', validators=[InputRequired()])
     password = PasswordField('password', validators=[InputRequired()])
 
 
-'''
-@app.route('/login', methods=['GET'])
-def login():
-    request_body = request.get_json()
-    user_credentials = UserCredentials.query.get(request_body['username'])
-
-    response = dict()
-    if user_credentials is not None:
-        if user_credentials.password == request_body['password']:
-            response['status'] = 'SUCCESS'
-            user = User.query.filter_by(username=request_body['username']).first()
-            login_user(user)
-            session.permanent = True
-            return redirect(url_for('welcome'))
-        else:
-            response['status'] = 'INCORRECT_PASSWORD'
-    else:
-        response['status'] = 'INCORRECT_USERNAME'
-
-    return json.dumps(response)
-
-
-@app.route('/user', methods=['GET'])
-def get_user_details():
-    request_body = request.get_json()
-    user_details = User.query.get(request_body['username'])
-    response = dict()
-    if user_details is not None:
-        response['status'] = 'SUCCESS'
-        user_details_dict = user_details.__dict__
-        _ = user_details_dict.pop('_sa_instance_state')
-        response['response'] = user_details_dict
-    else:
-        response['status'] = 'INCORRECT_USERNAME'
-
-    return json.dumps(response)
-'''
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    try:
-        registration_form = RegistrationForm()
+    registration_form = RegistrationForm()
 
-        if registration_form.validate_on_submit():
-            # verify the user first before adding to db
-            # referral_code=''.join(random.choices(string.ascii_letters + string.digits, k=6))
-            
-            #check whether user's 2 keyed passwords are the same
-            pw1 = registration_form.password.data
-            pw2 = registration_form.password2.data
-            
-            if pw1 != pw2:
-                flash('Your passwords do not match. Please try again.')
-                return redirect(url_for('register'))
-            
-            
-            new_user = User(username=registration_form.username.data,
-                            fname=registration_form.first_name.data,
-                            lname=registration_form.last_name.data,
-                            email=registration_form.email.data,
-                            password=registration_form.password.data,
-                            points=150)
+    if registration_form.validate_on_submit():
+        # verify the user first before adding to db
+        # referral_code=''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
+        # check whether user's 2 keyed passwords are the same
+        pw1 = registration_form.password.data
+        pw2 = registration_form.confirm_password.data
+
+        if pw1 != pw2:
+            flash('Your passwords do not match. Please try again.')
+            return redirect(url_for('register'))
+
+        new_user = User(
+            username=registration_form.username.data,
+            first_name=registration_form.first_name.data,
+            last_name=registration_form.last_name.data,
+            email=registration_form.email.data
+        )
+
+        new_user_credentials = UserCredentials(
+            username=registration_form.username.data,
+            password=registration_form.password.data
+        )
+
+        try:
             db.session.add(new_user)
-            try:
-                db.session.commit()
-            except Exception as e:
-                db.session.rollback()
-                flash('Something went wrong. Please try again.')
-                return redirect(url_for('register'))
+            db.session.add(new_user_credentials)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('Username taken, please choose a new one')
+            return redirect(url_for('register'))
+        except OperationalError:
+            flash('Database server is down. Please contact the system administrator.')
+        except Exception as e:
+            flash(str(e) + ". Please contact the system administrator.")
 
-            
+        login_user(new_user)
+        flash('Thank you for signing up! Please login')
+        return redirect(url_for('login'))
 
-            login_user(new_user)
-            flash('Thank you for signing up! Please login')
-            return redirect(url_for('login'))
-    except OperationalError as e:
-        flash('Database server is down. Please contact the system administrator.')
-    except Exception as e:
-        flash(str(e) + ". Please contact the system administrator.")
-
-    return render_template("Register.html", registrationform=registration_form)
+    return render_template("register.html", registrationform=registration_form)
 
 
-@app.route('/', methods = ['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     registration_form = RegistrationForm()
     login_form = LoginForm()
@@ -177,8 +149,21 @@ def login():
             return redirect(url_for('home'))
         else:
             print("Please try again")
+        username = login_form.username.data
+        user = User.query.get(username)
+        user_credentials = UserCredentials.query.get(username)
+        if user_credentials is not None:
+            if user_credentials.password == login_form.password.data:
+                login_user(user)
+                session.permanent = True
+                print(user)
+                print("redirecting")
+                return redirect(url_for('home'))
+            else:
+                print('some shit happened')
 
-    return render_template("Login.html",  registration_form=registration_form, loginform=login_form)
+    return render_template("login.html", registration_form=registration_form, loginform=login_form)
+
 
 @app.route('/home', methods = ['GET', 'POST'])
 @login_required
@@ -214,6 +199,7 @@ def logout():
 
     return redirect(url_for('login'))
 
+
 '''
 @app.route('/wheel', methods=['GET'])
 def wheel():
@@ -240,7 +226,6 @@ def wheel():
     
     return render_template("wheel.html")
 '''
-
 
 if __name__ == '__main__':
     app.debug = True
