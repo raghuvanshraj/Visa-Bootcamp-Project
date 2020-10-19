@@ -14,8 +14,6 @@ from flask_bootstrap import Bootstrap
 import json
 import os
 import random
-from wtforms import StringField, PasswordField
-from wtforms.validators import InputRequired, Length
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
@@ -137,7 +135,7 @@ def login():
     login_form = LoginForm()
 
     if login_form.validate_on_submit():
-        user_login = login_form.user_login.data
+        user_login = login_form.username.data
         user=User.query.filter_by(username=user_login).first()
         user_password = UserCredentials.query.filter_by(username=user_login).first().password
 
