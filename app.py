@@ -8,6 +8,7 @@ from flask_login import login_user, login_required, logout_user, current_user, L
 from flask_bootstrap import Bootstrap
 import json
 import os
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
@@ -175,14 +176,34 @@ def login():
             print("redirecting")
             return redirect(url_for('home'))
         else:
-            print("some shit happened")
+            print("Please try again")
 
     return render_template("Login.html",  registration_form=registration_form, loginform=login_form)
 
-@app.route('/home')
+@app.route('/home', methods = ['GET', 'POST'])
 @login_required
 def home():
-    return render_template("Home.html")
+    segment_chosen = random.randint(1, 8)
+    print(segment_chosen)
+    
+    is_submitted = "confirm" in request.form
+    if is_submitted:
+        # Call Visa API to get offer based on the segment that the pointer points at on the wheel
+        print("==========submitted=======")
+        print(segment_chosen)
+        session.pop('segment_chosen')
+        points_left = current_user.points - 15
+        current_user.points = points_left
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash('Something went wrong. Please try again.')
+            return redirect(url_for('home'))
+        
+        flash('You got segment ' + str(segment_chosen) + '. You have ' + str(points_left) + ' points left.')
+        return redirect(url_for('home'))
+    return render_template("Home.html", segment_chosen=segment_chosen)
 
 
 @app.route('/logout', methods=['GET', 'POST'])

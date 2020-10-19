@@ -7,6 +7,7 @@
 		<link href="../static/assets/css/icons.css" rel="stylesheet" type="text/css">
 		<link href="../static/assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
 		<link href="../static/assets/css/style.css" rel="stylesheet" type="text/css">
+		<link href="../static/assets/css/wheel.css" rel="stylesheet" type="text/css">
 		<script src="../static/assets/js/modernizr.min.js"></script>
 	</head>
 	Welcome!
@@ -23,41 +24,47 @@
 		
 		
 		<div align="center">
-            <h1>Winwheel.js example wheel - basic code wheel</h1>
-            <p>Here is an example of a basic code drawn wheel which spins to a stop with the prize won alerted to the user.</p>
-            <br />
-            <p>Choose a power setting then press the Spin button. You will be alerted to the prize won when the spinning stops.</p>
-            <br />
-            <table cellpadding="0" cellspacing="0" border="0">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="p-20">
+                        {% for message in messages: %}
+                            <h5 class="alert alert-danger">{{ message }}</h5>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <table cellpadding="0" cellspacing="0" border="0" class="wheel-table">
                 <tr>
-                    <td>
+                    <td height="500" id="wheel-cell" class="the_wheel" align="center" valign="center">
+                        <canvas id="VisaWheel" width="350" height="350">
+                            <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please update your browser version or try another browser.</p>
+                        </canvas>
+                        <img id="prizePointer" src = "../static/assets/images/wheel_stuff/basic_pointer.png"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="power-container" align="center" valign="center">
                         <div class="power_controls">
-                            <br />
-                            <br />
                             <table class="power" cellpadding="10" cellspacing="0">
                                 <tr>
-                                    <th align="center">Power</th>
+                                    <th class="power-table-cell" align="center" colspan="3">Power</th>
                                 </tr>
                                 <tr>
-                                    <td width="78" align="center" id="pw3" onClick="powerSelected(3);">High</td>
-                                </tr>
-                                <tr>
-                                    <td align="center" id="pw2" onClick="powerSelected(2);">Med</td>
-                                </tr>
-                                <tr>
-                                    <td align="center" id="pw1" onClick="powerSelected(1);">Low</td>
+                                    <td width="78" align="center" id="pw1" class="power-setting">Low</td>
+                                    <td width="78" align="center" id="pw2" class="power-setting">Med</td>
+                                    <td width="78" align="center" id="pw3" class="power-setting">High</td>
                                 </tr>
                             </table>
                             <br />
-                            <img id="spin_button" src="spin_off.png" alt="Spin" onClick="startSpin();" />
+                            <img id="spin_button" src = "../static/assets/images/wheel_stuff/spin_off.png" alt="Spin"/>
                             <br /><br />
-                            &nbsp;&nbsp;<a href="#" onClick="resetWheel(); return false;">Play Again</a><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(reset)
+                            <div id="collect-prize" style="display: none">
+                                <form id="claim-prize" method="post">
+                                    <input type="hidden" id="prize" value={{ segment_chosen }}>
+                                    <button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
+                                </form>
+                            </div>
                         </div>
-                    </td>
-                    <td width="438" height="582" class="the_wheel" align="center" valign="center">
-                        <canvas id="canvas" width="434" height="434">
-                            <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please try another.</p>
-                        </canvas>
                     </td>
                 </tr>
             </table>
