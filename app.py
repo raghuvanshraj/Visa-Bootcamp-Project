@@ -79,52 +79,48 @@ class LoginForm(FlaskForm):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    try:
-        registration_form = RegistrationForm()
+    registration_form = RegistrationForm()
 
-        if registration_form.validate_on_submit():
-            # verify the user first before adding to db
-            # referral_code=''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    if registration_form.validate_on_submit():
+        # verify the user first before adding to db
+        # referral_code=''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
-            # check whether user's 2 keyed passwords are the same
-            pw1 = registration_form.password.data
-            pw2 = registration_form.confirm_password.data
+        # check whether user's 2 keyed passwords are the same
+        pw1 = registration_form.password.data
+        pw2 = registration_form.confirm_password.data
 
-            if pw1 != pw2:
-                flash('Your passwords do not match. Please try again.')
-                return redirect(url_for('register'))
+        if pw1 != pw2:
+            flash('Your passwords do not match. Please try again.')
+            return redirect(url_for('register'))
 
-            new_user = User(
-                username=registration_form.username.data,
-                first_name=registration_form.first_name.data,
-                last_name=registration_form.last_name.data,
-                email=registration_form.email.data,
-                points=150
-            )
+        new_user = User(
+            username=registration_form.username.data,
+            first_name=registration_form.first_name.data,
+            last_name=registration_form.last_name.data,
+            email=registration_form.email.data
+        )
 
-            new_user_credentials = UserCredentials(
-                username=registration_form.username.data,
-                password=registration_form.password.data
-            )
+        new_user_credentials = UserCredentials(
+            username=registration_form.username.data,
+            password=registration_form.password.data
+        )
 
-            try:
-                db.session.add(new_user)
-                db.session.add(new_user_credentials)
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                flash('Username taken, please choose a new one')
-                return redirect(url_for('register'))
-            except Exception as e:
-                flash(str(e) + ". Please contact the system administrator.")
+        try:
+            db.session.add(new_user)
+            db.session.add(new_user_credentials)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('Username taken, please choose a new one')
+            return redirect(url_for('register'))
+        except OperationalError:
+            flash('Database server is down. Please contact the system administrator.')
+        except Exception as e:
+            flash(str(e) + ". Please contact the system administrator.")
 
-            login_user(new_user)
-            flash('Thank you for signing up! Please login')
-            return redirect(url_for('login'))
-    except OperationalError:
-        flash('Database server is down. Please contact the system administrator.')
-    except Exception as e:
-        flash(str(e) + ". Please contact the system administrator.")
+        login_user(new_user)
+        flash('Thank you for signing up! Please login')
+        return redirect(url_for('login'))
 
     return render_template("register.html", registrationform=registration_form)
 
