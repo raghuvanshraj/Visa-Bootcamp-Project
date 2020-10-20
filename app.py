@@ -168,25 +168,30 @@ def login():
 def home():
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
-    
-    is_submitted = "confirm" in request.form
-    if is_submitted:
-        # Call Visa API to get offer based on the segment that the pointer points at on the wheel
-        print("==========submitted=======")
-        print(segment_chosen)
-        session.pop('segment_chosen')
-        points_left = current_user.points - 15
-        current_user.points = points_left
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            flash('Something went wrong. Please try again.')
-            return redirect(url_for('home'))
         
-        flash('You got segment ' + str(segment_chosen) + '. You have ' + str(points_left) + ' points left.')
-        return redirect(url_for('home'))
     return render_template("Home.html", segment_chosen=segment_chosen)
+
+
+@app.route('/claim_prize', methods = ['POST'])
+@login_required
+def claim_prize():
+    # Call Visa API to get offer based on the segment that the pointer points at on the wheel
+    segment_chosen = request.form['segment']
+    points_left = current_user.points - 15
+    current_user.points = points_left
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        flash('Something went wrong. Please try again.')
+        return redirect(url_for('home'))
+    
+    
+    if (int(segment_chosen)==4 or int(segment_chosen)==8):
+        flash('Too bad! Try again')
+    else:
+        flash('You got segment ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')
+    return redirect(url_for('home'))
 
 
 @app.route('/logout', methods=['GET', 'POST'])

@@ -57,15 +57,30 @@
                             </table>
                             <br />
                             <img id="spin_button" src = "../static/assets/images/wheel_stuff/spin_off.png" alt="Spin"/>
-                            <br /><br />
-                            <div id="collect-prize" style="display: none">
-                                <form id="claim-prize" method="post">
-                                    <input type="hidden" id="prize" value={{ segment_chosen }}>
-                                    <button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
-                                </form>
-                            </div>
                         </div>
                     </td>
+					<td cellpadding="10" ></td>
+					<td>
+						<div id="collect-prize" style="display: none">
+							<form action="{{url_for('claim_prize')}}" id="claim-prize" method="post">
+								<input type="hidden" id="prize" name='segment' value={{ segment_chosen }}>
+								<button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
+							</form>
+						</div>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+					</td>
                 </tr>
             </table>
         </div>
