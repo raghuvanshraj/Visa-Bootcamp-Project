@@ -1,4 +1,5 @@
-{% import "bootstrap/wtf.html" as wtf %}
+
+
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "layouts/base.html"%}
 
@@ -10,6 +11,7 @@
 {%endblock%}
 
 {% block content %}
+
 <body class="bg-accpunt-pages">
   <!-- HOME -->
   <section>
@@ -24,6 +26,7 @@
                     <a href="{{url_for('login')}}" class="text-success">
                       <span>
                         <img src="../../static/assets/images/visa_icon.png" alt="" height="100"> </span>
+
                       </a>
                     </h2>
                     <h5 class="text-uppercase font-bold m-b-5 m-t-50">Register</h5>
@@ -65,6 +68,7 @@
                         <div class="col-12">
                           <button class="btn btn-md btn-block btn-primary loginbtn" type="submit">Create account</button>
                         </div>
+
                     <!--<div class="form-group row text-center m-t-10">
                       <div class="col-12">
                         <button class="btn btn-md btn-block btn-info loginbtn" type="submit">Send code</button>
@@ -73,15 +77,16 @@
                   </form>
                   <div class="col-12">
                     <div class="p-20">
-                      {% with messages = get_flashed_messages() %}
-                      {% if messages %}
-                      {% for message in messages %}
-                      <h5>{{ message }}</h5>
-                      {% endfor %}
-                      {% endif %}
-                      {% endwith %}
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <h5>{{ message }}</h5>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                     </div>
-                  </div>
+                </div>
                   <!--<form class="form-horizontal" action="#">
                     <div class="form-group m-b-20 row">
                       <div class="col-12">
