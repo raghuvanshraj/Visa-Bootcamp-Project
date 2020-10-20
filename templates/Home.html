@@ -1,16 +1,15 @@
-<html>
-	<head>
-		<!-- App favicon -->
-		<link rel="shortcut icon" href="../static/assets/images/favicon.ico">
-		<!-- App css -->
-		<link href="../static/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-		<link href="../static/assets/css/icons.css" rel="stylesheet" type="text/css">
-		<link href="../static/assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
-		<link href="../static/assets/css/style.css" rel="stylesheet" type="text/css">
-		<link href="../static/assets/css/wheel.css" rel="stylesheet" type="text/css">
-		<script src="../static/assets/js/modernizr.min.js"></script>
-	</head>
-	Welcome!
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "layouts/base.html"%}
+
+{%block title%}
+  - Home
+{%endblock%}
+
+{%block css%}
+<link href="../static/assets/css/wheel.css" rel="stylesheet" type="text/css">
+{%endblock%}
+
+{% block content %}
 	<body>
 		<div class="add-list float-right">
 			<!-- Logout -->
@@ -84,23 +83,10 @@
                 </tr>
             </table>
         </div>
-	<!-- this end div is for wrapper -->
-    <!-- jQuery  -->
-	<script src="../static/assets/js/jquery.min.js"></script>
-	<script src="../static/assets/js/tether.min.js"></script>
-	<!-- Tether for Bootstrap -->
-	<script src="../static/assets/js/bootstrap.min.js"></script>
-	<script src="../static/assets/js/metisMenu.min.js"></script>
-	<script src="../static/assets/js/waves.js"></script>
-	<script src="../static/assets/js/jquery.slimscroll.js"></script>
-	<!-- App js -->
-	<script src="../static/assets/js/jquery.core.js"></script>
-	<script src="../static/assets/js/jquery.app.js"></script>
-    
-    <!-- WinWheel -->
-    <script src="../static/js/Winwheel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
-    <script src="../static/js/wheel_stuff/load_wheel.js"></script>
 	
 	</body>
-</html>
+{%endblock%}
+
+{%block js%}
+<script src="../static/js/wheel_stuff/load_wheel.js"></script>
+{%endblock%}

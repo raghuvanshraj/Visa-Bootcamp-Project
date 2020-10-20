@@ -203,7 +203,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-
+'''
 @app.route('/wheel', methods=['GET'])
 def wheel():
 
@@ -228,7 +228,7 @@ def wheel():
     
     
     return render_template("wheel.html")
-
+'''
 
 if __name__ == '__main__':
     app.debug = True
