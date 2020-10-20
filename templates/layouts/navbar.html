@@ -33,19 +33,27 @@ hr{
           <div style="font-size: xxx-large;text-align-last: center;">
 
             <i class="fa fa-user-circle"></i>
-            <p style="    font-size: medium;"> sachin kumar </p>
+            <p style="    font-size: medium;"> {{current_user.first_name}} {{current_user.last_name}} </p>
           </div>
           <hr>
         <hr>
-       <!--  </li>
+      
+         <li class="nav-item">
+          <a class="nav-item nav-link" href="#"><i class="fa fa-bitcoin"></i> Your Points <span style="background-color: darkcyan;color: white;font-size: 12px;padding: 2px;padding-left: 5px;padding-right: 5px;border-radius: 20px;font-weight: 600;">{{ current_user.points}} </span></a>
+        <hr>
+        </li>
         <li class="nav-item">
-          <a class="nav-item nav-link" href="{{url_for('new_post')}}"> New Post</a>
+          <a class="nav-item nav-link" href="#"><i class="fa fa-trophy"></i> Your Rewards</a>
         <hr>
-        </li> -->
-        <!-- <li class="nav-item">
-          <a class="nav-item nav-link" href="{{url_for('account')}}">Account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="#"><i class="fa fa-cc-visa"></i> Your Coupons </a>
         <hr>
-        </li> -->
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="#"><i class="fa fa-address-card"></i> Your profile</a>
+        <hr>
+        </li>
         <li class="nav-item">
           <a class="nav-item nav-link" href="{{url_for('logout')}}"><i class="fa fa-sign-out"></i> Logout</a>
         <hr>

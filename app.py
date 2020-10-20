@@ -138,6 +138,8 @@ def register():
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     registration_form = RegistrationForm()
     login_form = LoginForm()
 
@@ -154,8 +156,11 @@ def login():
                 print("redirecting")
                 return redirect(url_for('home'))
             else:
-                print('some shit happened')
-
+                flash('Invalid credentials!')
+                print('Invalid credentials!')
+        else :
+            print("user credentials not found")
+            flash("user credentials not found")
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
 
