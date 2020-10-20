@@ -22,6 +22,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 
+# Country Codes
+COUNTRY_CODES = {
+    'Canada': 38,
+    'China': 44,
+    'Denmark': 58,
+    'Peru': 175,
+    'United Arab Emirates': 232,
+    'United States of America': 234
+}
+
 # Secret key for csrf
 SECRET_KEY = os.urandom(32)
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -62,6 +72,7 @@ class User(db.Model):
     first_name = db.Column('first_name', db.Text)
     last_name = db.Column('last_name', db.Text)
     points = db.Column('points', db.Integer)
+    country_code = db.Column('country_code', db.Integer)
 
     def get_id(self):
         return (self.username)
@@ -77,12 +88,11 @@ class User(db.Model):
 
 # Forms
 class RegistrationForm(FlaskForm):
-    myChoices = ["Canada", "China", "Denmark", "Peru", "United Arab Emirates", "United States of America"]
     username = StringField('Username', validators=[InputRequired()])
     first_name = StringField('First Name', validators=[InputRequired()])
     last_name = StringField('Last Name', validators=[InputRequired()])
     email = StringField('Email', validators=[InputRequired()])
-    region = SelectField('Your Region', choices=myChoices, validators=[InputRequired()])
+    country = SelectField('Country', choices=list(COUNTRY_CODES.keys()), validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8)])
 
@@ -113,7 +123,8 @@ def register():
             first_name=registration_form.first_name.data,
             last_name=registration_form.last_name.data,
             email=registration_form.email.data,
-            points=0
+            points=0,
+            country_code=COUNTRY_CODES[registration_form.country.data]
         )
 
         new_user_credentials = UserCredentials(
@@ -122,13 +133,9 @@ def register():
         )
 
         try:
-            print(0, flush=True)
             db.session.add(new_user)
-            print(0, flush=True)
             db.session.add(new_user_credentials)
-            print(0, flush=True)
             db.session.commit()
-            print(0, flush=True)
         except IntegrityError:
             db.session.rollback()
             flash('Username taken, please choose a new one')
