@@ -27,7 +27,7 @@
                         <img src="../static/assets/images/visa_icon.png" alt="" height="100"> </span>
                       </a>
                     </h2>
-                    <h5 class="text-uppercase font-bold m-b-5 m-t-50">Login</h5>
+                    <h5 class="text-uppercase font-bold m-b-5 ">Login</h5>
                     <p class="m-b-0">Log in as an existing user</p>
                   </div>
                   <div class="account-content">
@@ -35,7 +35,7 @@
                       {{ loginform.hidden_tag() }}
                       <div class="form-group row m-b-20">
                         <div class="col-12 col-md-12">
-                          
+
                           {{ wtf.form_field(loginform.username) }}
                           {{ wtf.form_field(loginform.password) }}
                           <a href="{{url_for('register')}}" class="text-muted pull-right">
@@ -51,7 +51,7 @@
                         </div>
                       </div>
                     </form>
-                    
+
                     <div class="col-12">
                       {% with messages = get_flashed_messages() %}
                       {% if messages %}
@@ -63,7 +63,7 @@
                       {% endif %}
                       {% endwith %}
                     </div>
-                    <div class="row m-t-50">
+                    <div class="row ">
                       <div class="col-sm-12 text-center">
                         <p class="text-muted">Don't have an account?
                           <a href="{{url_for('register')}}" class="text-dark m-l-5">

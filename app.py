@@ -8,7 +8,7 @@ from flask_login import login_user, login_required, logout_user, current_user, L
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, BooleanField
+from wtforms import StringField,SelectField, PasswordField, IntegerField, BooleanField
 from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_bootstrap import Bootstrap
@@ -75,10 +75,12 @@ class User(db.Model):
 
 # Forms
 class RegistrationForm(FlaskForm):
+    myChoices= ["Canada", "china", "Denmark","Peru","United Arab Emirates","United State of America"]
     username = StringField('Username', validators=[InputRequired()])
     first_name = StringField('First Name', validators=[InputRequired()])
     last_name = StringField('Last Name', validators=[InputRequired()])
     email = StringField('Email', validators=[InputRequired()])
+    region = SelectField(u'Your Region', choices = myChoices, validators = [InputRequired()])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8)])
 

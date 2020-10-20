@@ -1,6 +1,6 @@
 {% if current_user.is_authenticated%}
- <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Visa</a>
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#" style="place-self: normal;">Visa</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -15,12 +15,12 @@
 
 <style type="text/css">
   a:hover {
-  color: blue;
-}
-hr{
-      margin-top: 0rem;
+    color: blue;
+  }
+  hr{
+    margin-top: 0rem;
     margin-bottom: 0rem;
-}
+  }
 </style>
 <div class="container-fluid">
   <div class="row">
@@ -36,39 +36,39 @@ hr{
             <p style="    font-size: medium;"> {{current_user.first_name}} {{current_user.last_name}} </p>
           </div>
           <hr>
-        <hr>
-      
-         <li class="nav-item">
-          <a class="nav-item nav-link" href="#"><i class="fa fa-bitcoin"></i> Your Points <span style="background-color: darkcyan;color: white;font-size: 12px;padding: 2px;padding-left: 5px;padding-right: 5px;border-radius: 20px;font-weight: 600;">{{ current_user.points}} </span></a>
-        <hr>
-        </li>
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="#"><i class="fa fa-trophy"></i> Your Rewards</a>
-        <hr>
-        </li>
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="#"><i class="fa fa-cc-visa"></i> Your Coupons </a>
-        <hr>
-        </li>
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="#"><i class="fa fa-address-card"></i> Your profile</a>
-        <hr>
-        </li>
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="{{url_for('logout')}}"><i class="fa fa-sign-out"></i> Logout</a>
-        <hr>
-        </li>
-        {%else%}
-        <li class="nav-item">
+          <hr>
 
-          <a class="nav-item nav-link" href="{{url_for('login')}}"> <i class="fa fa-sign-in"></i> Login</a>
-        <hr>
-        </li>
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="{{url_for('register')}}"><i class="fa fa fa-user-o"></i> Register</a>
-        <hr>
-        </li>
-        {%endif%}
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="#"><i class="fa fa-bitcoin"></i> Your Points <span style="background-color: darkcyan;color: white;font-size: 12px;padding: 2px;padding-left: 5px;padding-right: 5px;border-radius: 20px;font-weight: 600;">{{ current_user.points}} </span></a>
+            <hr>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="#"><i class="fa fa-trophy"></i> Your Rewards</a>
+            <hr>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="#"><i class="fa fa-cc-visa"></i> Your Coupons </a>
+            <hr>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="#"><i class="fa fa-address-card"></i> Your profile</a>
+            <hr>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="{{url_for('logout')}}"><i class="fa fa-sign-out"></i> Logout</a>
+            <hr>
+          </li>
+          {%else%}
+          <li class="nav-item">
+
+            <a class="nav-item nav-link" href="{{url_for('login')}}"> <i class="fa fa-sign-in"></i> Login</a>
+            <hr>
+          </li>
+          <li class="nav-item">
+            <a class="nav-item nav-link" href="{{url_for('register')}}"><i class="fa fa fa-user-o"></i> Register</a>
+            <hr>
+          </li>
+          {%endif%}
             <!-- <li class="nav-item">
               <a class="nav-link active" href="#">
                 <span data-feather="home"></span>
@@ -147,8 +147,8 @@ hr{
                 Year-end sale
               </a>
             <hr>
-            </li> -->
-          </ul>
-        </div>
-      </nav>
+          </li> -->
+        </ul>
+      </div>
+    </nav>
     {%endif%}
