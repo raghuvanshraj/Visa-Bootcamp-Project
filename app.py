@@ -1,14 +1,19 @@
 import os
 
 from flask import Flask
-from flask import redirect, url_for, render_template, flash, session
+from flask import redirect, url_for, render_template, request, flash, session,jsonify
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
-from wtforms.validators import InputRequired, Length
+from wtforms import StringField, PasswordField, IntegerField, BooleanField
+from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
+from flask_login import login_user, login_required, logout_user, current_user, LoginManager
+from flask_bootstrap import Bootstrap
+import json
+import os
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
@@ -30,7 +35,7 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(username):
     try:
-        return User.query.get(username)
+        return User.query.filter_by(username=username).first()
     except:
         return None
 
@@ -60,7 +65,6 @@ class User(db.Model):
     def is_authenticated(self):
         """Return True if the user is authenticated."""
         return True
-
 
 # Forms
 class RegistrationForm(FlaskForm):
@@ -131,6 +135,18 @@ def login():
     login_form = LoginForm()
 
     if login_form.validate_on_submit():
+        user_login = login_form.username.data
+        user=User.query.filter_by(username=user_login).first()
+        user_password = UserCredentials.query.filter_by(username=user_login).first().password
+
+        if user_password == login_form.password.data:
+            login_user(user)
+            session.permanent = True
+            print(user)
+            print("redirecting")
+            return redirect(url_for('home'))
+        else:
+            print("Please try again")
         username = login_form.username.data
         user = User.query.get(username)
         user_credentials = UserCredentials.query.get(username)
@@ -147,10 +163,35 @@ def login():
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
 
-@app.route('/home')
+@app.route('/home', methods = ['GET', 'POST'])
 @login_required
 def home():
-    return render_template("home.html")
+    segment_chosen = random.randint(1, 8)
+    print(segment_chosen)
+        
+    return render_template("Home.html", segment_chosen=segment_chosen)
+
+
+@app.route('/claim_prize', methods = ['POST'])
+@login_required
+def claim_prize():
+    # Call Visa API to get offer based on the segment that the pointer points at on the wheel
+    segment_chosen = request.form['segment']
+    points_left = current_user.points - 15
+    current_user.points = points_left
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        flash('Something went wrong. Please try again.')
+        return redirect(url_for('home'))
+    
+    
+    if (int(segment_chosen)==4 or int(segment_chosen)==8):
+        flash('Too bad! Try again')
+    else:
+        flash('You got segment ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')
+    return redirect(url_for('home'))
 
 
 @app.route('/logout', methods=['GET', 'POST'])

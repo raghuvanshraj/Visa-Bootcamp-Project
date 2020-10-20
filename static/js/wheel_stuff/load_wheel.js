@@ -19,14 +19,14 @@ $(window).on('load', function() {
     prize = 0;
     segment_chosen = document.getElementById("prize").value;
     var outer_radius = 170;
-    var pic_location = "../../../static/assets/images/wheel_stuff/big.png"
+    var pic_location = "../static/assets/images/wheel_stuff/big.png"
     
     if (detectmob()) {
         pic_location = "../../../static/assets/images/wheel_stuff/small.png"
         outer_radius = 125;
         document.getElementById('wheel-cell').height = 430;
-        document.getElementById('kenboruWheel').width = 280;
-        document.getElementById('kenboruWheel').height = 280;
+        document.getElementById('VisaWheel').width = 280;
+        document.getElementById('VisaWheel').height = 280;
     }
     
     console.log(segment_chosen);
@@ -59,20 +59,19 @@ $(window).on('load', function() {
     */
     
     var theWheel = new Winwheel({
-        'canvasId'          : 'kenboruWheel',
+        'canvasId'          : 'VisaWheel',
         'numSegments'       : 8,                 // Specify number of segments.
-        'outerRadius'       : outer_radius,               // Set outer radius so wheel fits inside the background.
-        'drawMode'          : 'image',    // Must be segmentImage to draw wheel using one image per segemnt.  
+        'outerRadius'       : outer_radius,               // Set outer radius so wheel fits inside the background.  
         'segments'          :                    // Define segments including image and text.
         [
-           {'text' : '5'},
-           {'text' : '10'},
-           {'text' : '0'},
-           {'text' : '1.00'},
-           {'text' : '0'},
-           {'text' : '0.50'},
-           {'text' : '15'},
-           {'text' : '20'}
+           {'fillStyle' : '#eae56f', 'text' : 'Offer 1'},
+		   {'fillStyle' : '#89f26e', 'text' : 'Offer 2'},
+		   {'fillStyle' : '#7de6ef', 'text' : 'Offer 3'},
+		   {'fillStyle' : '#e7706f', 'text' : 'Try again'},
+		   {'fillStyle' : '#eae56f', 'text' : 'Offer 5'},
+		   {'fillStyle' : '#89f26e', 'text' : 'Offer 6'},
+		   {'fillStyle' : '#7de6ef', 'text' : 'Offer 7'},
+		   {'fillStyle' : '#e7706f', 'text' : 'Try again'}
         ],
         'animation' :           // Specify the animation to use.
         {
@@ -88,7 +87,8 @@ $(window).on('load', function() {
             'number' : 16   // Number of pins. They space evenly around the wheel.
         }
     });
-    
+	
+    /*
     var firstImg = new Image();
  
     // Create callback to execute once the image has finished loading.
@@ -100,7 +100,7 @@ $(window).on('load', function() {
      
     // Set the image source, once complete this will trigger the onLoad callback (above).
     firstImg.src = pic_location;
-    
+    */
     
     
     
