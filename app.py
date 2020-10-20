@@ -170,7 +170,7 @@ def home():
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
 
-    return render_template("Home.html", segment_chosen=segment_chosen)
+    return render_template("home.html", segment_chosen=segment_chosen)
 
 
 @app.route('/claim_prize', methods=['POST'])
