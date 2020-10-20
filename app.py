@@ -13,6 +13,7 @@ from flask_login import login_user, login_required, logout_user, current_user, L
 from flask_bootstrap import Bootstrap
 import json
 import os
+import traceback
 import random
 
 app = Flask(__name__)
@@ -101,7 +102,9 @@ def register():
             username=registration_form.username.data,
             first_name=registration_form.first_name.data,
             last_name=registration_form.last_name.data,
-            email=registration_form.email.data
+            email=registration_form.email.data,
+            # Give some starting points
+            points=500
         )
 
         new_user_credentials = UserCredentials(
@@ -113,13 +116,15 @@ def register():
             db.session.add(new_user)
             db.session.add(new_user_credentials)
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
             flash('Username taken, please choose a new one')
             return redirect(url_for('register'))
         except OperationalError:
+            db.session.rollback()
             flash('Database server is down. Please contact the system administrator.')
         except Exception as e:
+            db.session.rollback()
             flash(str(e) + ". Please contact the system administrator.")
 
         login_user(new_user)
@@ -176,6 +181,10 @@ def home():
 @login_required
 def claim_prize():
     # Call Visa API to get offer based on the segment that the pointer points at on the wheel
+    if current_user.points - 15 <= 0:
+        flash("You have insufficient points")
+        return redirect(url_for('home'))
+    
     segment_chosen = request.form['segment']
     points_left = current_user.points - 15
     current_user.points = points_left
