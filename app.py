@@ -1,15 +1,20 @@
 import os
-import random
+
 
 from flask import Flask
-from flask import redirect, url_for, render_template, request, flash, session
+from flask import redirect, url_for, render_template, request, flash, session,jsonify
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
 from sqlalchemy.exc import OperationalError, IntegrityError
-from wtforms import StringField, PasswordField
-from wtforms.validators import InputRequired, Length
+from flask_wtf import FlaskForm
+from wtforms import StringField,SelectField, PasswordField, IntegerField, BooleanField
+from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
+from flask_login import login_user, login_required, logout_user, current_user, LoginManager
+from flask_bootstrap import Bootstrap
+import json
+import os
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
@@ -35,6 +40,12 @@ def load_user(username):
     except:
         return None
 
+@login_manager.user_loader
+def load_user(username):
+    try:
+        return User.query.filter_by(username=username).first()
+    except:
+        return None
 
 # Tables
 class UserCredentials(db.Model):
@@ -62,13 +73,14 @@ class User(db.Model):
         """Return True if the user is authenticated."""
         return True
 
-
 # Forms
 class RegistrationForm(FlaskForm):
+    myChoices= ["Canada", "china", "Denmark","Peru","United Arab Emirates","United State of America"]
     username = StringField('Username', validators=[InputRequired()])
     first_name = StringField('First Name', validators=[InputRequired()])
     last_name = StringField('Last Name', validators=[InputRequired()])
     email = StringField('Email', validators=[InputRequired()])
+    region = SelectField(u'Your Region', choices = myChoices, validators = [InputRequired()])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8)])
 
@@ -133,10 +145,13 @@ def register():
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     registration_form = RegistrationForm()
     login_form = LoginForm()
 
     if login_form.validate_on_submit():
+
         username = login_form.username.data
         user = User.query.get(username)
         user_credentials = UserCredentials.query.get(username)
@@ -148,9 +163,13 @@ def login():
                 print("redirecting")
                 return redirect(url_for('home'))
             else:
-                print('some shit happened')
-
+                flash('Invalid credentials!')
+                print('Invalid credentials!')
+        else :
+            print("user credentials not found")
+            flash("user credentials not found")
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
+
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -163,6 +182,7 @@ def home():
 
 
 @app.route('/claim_prize', methods=['POST'])
+
 @login_required
 def claim_prize():
     # Call Visa API to get offer based on the segment that the pointer points at on the wheel
@@ -175,6 +195,7 @@ def claim_prize():
         db.session.rollback()
         flash('Something went wrong. Please try again.')
         return redirect(url_for('home'))
+
 
     if (int(segment_chosen) == 4 or int(segment_chosen) == 8):
         flash('Too bad! Try again')
