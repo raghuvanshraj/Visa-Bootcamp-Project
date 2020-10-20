@@ -98,7 +98,8 @@ def register():
             username=registration_form.username.data,
             first_name=registration_form.first_name.data,
             last_name=registration_form.last_name.data,
-            email=registration_form.email.data
+            email=registration_form.email.data,
+            points=0
         )
 
         new_user_credentials = UserCredentials(
@@ -107,9 +108,13 @@ def register():
         )
 
         try:
+            print(0, flush=True)
             db.session.add(new_user)
+            print(0, flush=True)
             db.session.add(new_user_credentials)
+            print(0, flush=True)
             db.session.commit()
+            print(0, flush=True)
         except IntegrityError:
             db.session.rollback()
             flash('Username taken, please choose a new one')
