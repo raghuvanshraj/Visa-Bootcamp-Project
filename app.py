@@ -136,18 +136,6 @@ def login():
     login_form = LoginForm()
 
     if login_form.validate_on_submit():
-        user_login = login_form.username.data
-        user = User.query.filter_by(username=user_login).first()
-        user_password = UserCredentials.query.filter_by(username=user_login).first().password
-
-        if user_password == login_form.password.data:
-            login_user(user)
-            session.permanent = True
-            print(user)
-            print("redirecting")
-            return redirect(url_for('home'))
-        else:
-            print("Please try again")
         username = login_form.username.data
         user = User.query.get(username)
         user_credentials = UserCredentials.query.get(username)
