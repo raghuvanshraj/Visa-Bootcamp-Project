@@ -1,19 +1,15 @@
 import os
+import random
 
 from flask import Flask
-from flask import redirect, url_for, render_template, request, flash, session, jsonify
+from flask import redirect, url_for, render_template, request, flash, session
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, BooleanField
-from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
-from flask_login import login_user, login_required, logout_user, current_user, LoginManager
-from flask_bootstrap import Bootstrap
-import json
-import os
-import random
+from sqlalchemy.exc import OperationalError, IntegrityError
+from wtforms import StringField, PasswordField
+from wtforms.validators import InputRequired, Length
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
