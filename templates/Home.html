@@ -1,0 +1,106 @@
+<html>
+	<head>
+		<!-- App favicon -->
+		<link rel="shortcut icon" href="../static/assets/images/favicon.ico">
+		<!-- App css -->
+		<link href="../static/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="../static/assets/css/icons.css" rel="stylesheet" type="text/css">
+		<link href="../static/assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
+		<link href="../static/assets/css/style.css" rel="stylesheet" type="text/css">
+		<link href="../static/assets/css/wheel.css" rel="stylesheet" type="text/css">
+		<script src="../static/assets/js/modernizr.min.js"></script>
+	</head>
+	Welcome!
+	<body>
+		<div class="add-list float-right">
+			<!-- Logout -->
+			<form action="{{url_for('logout')}}" method="post">
+				<button type='submit' class="btn v8" style="width: 12em;background:#44d62c">
+					LOGOUT
+				</button>
+			</form>
+		</div>
+		
+		
+		
+		<div align="center">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="p-20">
+                        {% for message in messages: %}
+                            <h5 class="alert alert-danger">{{ message }}</h5>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <table cellpadding="0" cellspacing="0" border="0" class="wheel-table">
+                <tr>
+                    <td height="500" id="wheel-cell" class="the_wheel" align="center" valign="center">
+                        <canvas id="VisaWheel" width="350" height="350">
+                            <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please update your browser version or try another browser.</p>
+                        </canvas>
+                        <img id="prizePointer" src = "../static/assets/images/wheel_stuff/basic_pointer.png"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="power-container" align="center" valign="center">
+                        <div class="power_controls">
+                            <table class="power" cellpadding="10" cellspacing="0">
+                                <tr>
+                                    <th class="power-table-cell" align="center" colspan="3">Power</th>
+                                </tr>
+                                <tr>
+                                    <td width="78" align="center" id="pw1" class="power-setting">Low</td>
+                                    <td width="78" align="center" id="pw2" class="power-setting">Med</td>
+                                    <td width="78" align="center" id="pw3" class="power-setting">High</td>
+                                </tr>
+                            </table>
+                            <br />
+                            <img id="spin_button" src = "../static/assets/images/wheel_stuff/spin_off.png" alt="Spin"/>
+                        </div>
+                    </td>
+					<td cellpadding="10" ></td>
+					<td>
+						<div id="collect-prize" style="display: none">
+							<form action="{{url_for('claim_prize')}}" id="claim-prize" method="post">
+								<input type="hidden" id="prize" name='segment' value={{ segment_chosen }}>
+								<button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
+							</form>
+						</div>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+						<br>
+					</td>
+                </tr>
+            </table>
+        </div>
+	<!-- this end div is for wrapper -->
+    <!-- jQuery  -->
+	<script src="../static/assets/js/jquery.min.js"></script>
+	<script src="../static/assets/js/tether.min.js"></script>
+	<!-- Tether for Bootstrap -->
+	<script src="../static/assets/js/bootstrap.min.js"></script>
+	<script src="../static/assets/js/metisMenu.min.js"></script>
+	<script src="../static/assets/js/waves.js"></script>
+	<script src="../static/assets/js/jquery.slimscroll.js"></script>
+	<!-- App js -->
+	<script src="../static/assets/js/jquery.core.js"></script>
+	<script src="../static/assets/js/jquery.app.js"></script>
+    
+    <!-- WinWheel -->
+    <script src="../static/js/Winwheel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+    <script src="../static/js/wheel_stuff/load_wheel.js"></script>
+	
+	</body>
+</html>
