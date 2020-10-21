@@ -182,10 +182,11 @@ def login():
 def home():
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
+    offers=get_merchant_offers(current_user.country_code)
+    return render_template("home.html", segment_chosen=segment_chosen, offers=offers)
 
-    return render_template("home.html", segment_chosen=segment_chosen)
 
-
+from visa_api import get_merchant_offers
 @app.route('/claim_prize', methods=['POST'])
 @login_required
 def claim_prize():
