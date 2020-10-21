@@ -178,7 +178,10 @@ def login():
 @login_required
 def home():
     segment_chosen = random.randint(1, 8)
-    print(segment_chosen)
+    if current_user.points - 15 <= 0:
+        # Assign segment_chosen to be a number outside of the available segments
+        segment_chosen = 9
+        flash("You have insufficient points")
 
     return render_template("home.html", segment_chosen=segment_chosen)
 

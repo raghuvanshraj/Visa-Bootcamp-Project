@@ -31,33 +31,6 @@ $(window).on('load', function() {
     
     console.log(segment_chosen);
     
-    /*
-    var points5 = '../../../static/assets/images/wheel_stuff/5.png';
-    var points10 = '../../../static/assets/images/wheel_stuff/10.png';
-    var points0 = '../../../static/assets/images/wheel_stuff/0.png';
-    var kredits1 = '../../../static/assets/images/wheel_stuff/1.png';
-    var points0_again = '../../../static/assets/images/wheel_stuff/0_again.png';
-    var kredits50 = '../../../static/assets/images/wheel_stuff/50.png';
-    var points15 = '../../../static/assets/images/wheel_stuff/15.png';
-    var points20 = '../../../static/assets/images/wheel_stuff/20.png';
-    var outer_radius = 170;
-    
-    if (detectmob()) {
-        points5 = '../../../static/assets/images/wheel_stuff/5_sm.png';
-        points10 = '../../../static/assets/images/wheel_stuff/10_sm.png';
-        points0 = '../../../static/assets/images/wheel_stuff/0_sm.png';
-        kredits1 = '../../../static/assets/images/wheel_stuff/1_sm.png';
-        points0_again = '../../../static/assets/images/wheel_stuff/0_again_sm.png';
-        kredits50 = '../../../static/assets/images/wheel_stuff/50_sm.png';
-        points15 = '../../../static/assets/images/wheel_stuff/15_sm.png';
-        points20 = '../../../static/assets/images/wheel_stuff/20_sm.png';
-        outer_radius = 125;
-        document.getElementById('wheel-cell').height = 430;
-        document.getElementById('kenboruWheel').width = 280;
-        document.getElementById('kenboruWheel').height = 280;
-    }
-    */
-    
     var theWheel = new Winwheel({
         'canvasId'          : 'VisaWheel',
         'numSegments'       : 8,                 // Specify number of segments.
@@ -158,9 +131,16 @@ $(window).on('load', function() {
     });
     
     
-    $("#spin_button").on("click", function() {
-        startSpin();
-    });
+	if (segment_chosen > 8) {
+		// Disable the spin button due to insufficient points
+		document.getElementById('spin_button').src       = "../../../static/assets/images/wheel_stuff/spin_off.png";
+		document.getElementById('spin_button').className = "";
+	} else {
+		$("#spin_button").on("click", function() {
+			startSpin();
+		});
+	}
+	
     
     // reset wheel to original
     $("#reset-button").on("click", function() {
@@ -197,10 +177,16 @@ $(window).on('load', function() {
 
             // Set wheelPower var used when spin button is clicked.
             wheelPower = powerLevel;
-
-            // Light up the spin button by changing it's source image and adding a clickable class to it.
-            document.getElementById('spin_button').src = "../../../static/assets/images/wheel_stuff/spin_on.png";
-            document.getElementById('spin_button').className = "clickable";
+			
+			if (segment_chosen > 8) {
+				// Disable the spin button due to insufficient points
+				document.getElementById('spin_button').src       = "../../../static/assets/images/wheel_stuff/spin_off.png";
+				document.getElementById('spin_button').className = "";
+			} else {
+				// Light up the spin button by changing it's source image and adding a clickable class to it.
+				document.getElementById('spin_button').src = "../../../static/assets/images/wheel_stuff/spin_on.png";
+				document.getElementById('spin_button').className = "clickable";
+			}
         }
     }
 
@@ -261,10 +247,16 @@ $(window).on('load', function() {
     }
     
     function finish_wheel(indicatedSegment) {
-        prize = Number(indicatedSegment.text);
-        //console.log(prize);
+        prize = indicatedSegment.text;
+        console.log(prize);
         //document.getElementById("prize").value = prize;
-        document.getElementById('collect-prize').style.display = "block";
+		if (prize == "Try again") {
+			// Auto refreshes page
+			$('#claim-prize-button').click();
+		} else {
+			// Shows claim prize button
+			document.getElementById('collect-prize').style.display = "block";
+		}
         //$('#claim-prize-button').click();
     }
     

@@ -27,7 +27,13 @@
                 {% if messages %}
                     <div class="p-20">
                         {% for message in messages: %}
-                            <h5 class="alert alert-danger">{{ message }}</h5>
+                            {% if message|length == 18%}
+                                <h5 class="alert alert-danger">{{ message }}</h5>
+                            {% elif message|length == 28 %}
+                                <h5 class="alert alert-danger">{{ message }}</h5>
+                            {% else %}
+                                <h5 class="alert alert-success">{{ message }}</h5>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 {% endif %}
@@ -56,32 +62,16 @@
                             </table>
                             <br />
                             <img id="spin_button" src = "../static/assets/images/wheel_stuff/spin_off.png" alt="Spin"/>
-                        </div>
+							<br>
+							<div id="collect-prize" style="display: none">
+								<form action="{{url_for('claim_prize')}}" id="claim-prize" method="post">
+									<input type="hidden" id="prize" name='segment' value={{ segment_chosen }}>
+									<button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
+								</form>
+							</div>
+						</div>
                     </td>
 					<!-- <td cellpadding="10" ></td> -->
-                </tr>
-                <tr>
-					<td>
-						<div id="collect-prize" style="display: none">
-							<form action="{{url_for('claim_prize')}}" id="claim-prize" method="post">
-								<input type="hidden" id="prize" name='segment' value={{ segment_chosen }}>
-								<button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
-							</form>
-						</div>
-						<!-- <br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br> -->
-					</td>
                 </tr>
             </table>
         </div>
