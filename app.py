@@ -16,8 +16,7 @@ import os
 import random
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
-                                        'dc890850b5b74b@ec2-54-160-202-3.compute-1.amazonaws.com:5432/d5ou4mml7frs0o'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c5778cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
@@ -179,14 +178,15 @@ def login():
             flash("user credentials not found")
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
-
+from visa_api import get_merchant_offers
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
-
-    return render_template("home.html", segment_chosen=segment_chosen)
+    offers=get_merchant_offers(current_user.country_code)
+    print(type(offers))
+    return render_template("home.html", segment_chosen=segment_chosen,offers=offers)
 
 
 @app.route('/claim_prize', methods=['POST'])
