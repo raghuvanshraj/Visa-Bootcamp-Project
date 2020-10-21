@@ -12,7 +12,7 @@ from sqlalchemy import ForeignKey
 from wtforms import StringField, SelectField, PasswordField
 from wtforms.validators import InputRequired, Length
 
-from visa_api import get_merchant_offers
+from visa_api import get_merchant_offers_by_country, get_merchant_offers_by_offerid
 
 app = Flask(__name__)
 
@@ -187,7 +187,7 @@ def home():
     print(current_user.country_code)
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
-    offers = get_merchant_offers(current_user.country_code)
+    offers = get_merchant_offers_by_country(current_user.country_code)
     data = []
     counter = 1
     for offer in offers:
@@ -269,9 +269,13 @@ def logout():
 
 
 @app.route('/rewards', methods=['GET'])
+@login_required
 def rewards():
     data = []
-    offers = UsersOffers.query.get
+    offers = UsersOffers.query.filter_by(username=current_user.username).all()
+    for offer in offers:
+        data.append(get_merchant_offers_by_offerid(offer.offer_id))
+
     if current_user.is_authenticated:
         return render_template("rewards.html", data=data)
     else:
