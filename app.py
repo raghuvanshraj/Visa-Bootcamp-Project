@@ -16,9 +16,7 @@ from visa_api import get_merchant_offers
 
 app = Flask(__name__)
 
-app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c5778cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://nnxfxopdedshdl:7aa1ba04b58fcd9e92b515b82db39d54be090105d3c74ab14f500a9662b8dad9@ec2-52-21-247-176.compute-1.amazonaws.com:5432/d1q0santvsss6r'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
@@ -81,7 +79,7 @@ class User(db.Model):
 
 class UsersOffers(db.Model):
     __tablename__ = 'users_offers'
-    hash_id = db.Column('hash_id', db.Integer, primary_key=True)
+    hash_id = db.Column('hash_id', db.BigInteger, primary_key=True)
     username = db.Column('username', db.Text, ForeignKey('user.username'))
     offer_id = db.Column('offer_id', db.Integer)
 
@@ -123,7 +121,7 @@ def register():
             first_name=registration_form.first_name.data,
             last_name=registration_form.last_name.data,
             email=registration_form.email.data,
-            points=0,
+            points=1000,
             country_code=COUNTRY_CODES[registration_form.country.data]
         )
 
@@ -179,6 +177,7 @@ def login():
         else:
             print("user credentials not found")
             flash("user credentials not found")
+
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
 
@@ -190,12 +189,17 @@ def home():
     print(segment_chosen)
     offers = get_merchant_offers(current_user.country_code)
     data = []
+    counter = 1
     for offer in offers:
         hash_id = hash(f'{current_user.username}#{offer["offerId"]}')
         if UsersOffers.query.get(hash_id) is None:
+            offer['counter'] = counter
+            counter += 1
             data.append(offer)
             if len(data) == 6:
                 break
+
+    session['offers'] = data
     return render_template("home.html", segment_chosen=segment_chosen, offers=data)
 
 
@@ -210,17 +214,48 @@ def claim_prize():
     segment_chosen = request.form['segment']
     points_left = current_user.points - 15
     current_user.points = points_left
-    try:
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        flash('Something went wrong. Please try again.')
-        return redirect(url_for('home'))
+
+    if int(segment_chosen) != 4 and int(segment_chosen) != 8:
+        curr_segment = int(segment_chosen)
+        print(curr_segment)
+        if curr_segment >= 4:
+            curr_segment -= 1
+        offers = session['offers']
+        print(offers)
+        offer_id = None
+        for offer in offers:
+            if offer['counter'] == curr_segment:
+                offer_id = offer['offerId']
+                break
+
+        new_users_offers = UsersOffers(
+            hash_id=hash(f'{current_user.username}#{offer_id}'),
+            username=current_user.username,
+            offer_id=offer_id
+        )
+
+        print(new_users_offers.__dict__)
+
+        try:
+            db.session.add(new_users_offers)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('Selected offer is already claimed')
+        except OperationalError:
+            db.session.rollback()
+            flash('Database server not responding, please try later')
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            flash('Something went wrong. Please try again.')
+            return redirect(url_for('home'))
 
     if int(segment_chosen) == 4 or int(segment_chosen) == 8:
         flash('Too bad! Try again')
     else:
         flash('You got segment ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')
+
     return redirect(url_for('home'))
 
 
@@ -235,6 +270,8 @@ def logout():
 
 @app.route('/rewards', methods=['GET'])
 def rewards():
+    data = []
+    offers = UsersOffers.query.get
     if current_user.is_authenticated:
         return render_template("rewards.html", data=data)
     else:
