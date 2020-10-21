@@ -25,7 +25,7 @@ def get_merchant_offers(country_code):
     r = requests.get(url, headers=headers, cert=certs)
     r_dict = r.json()
     response = []
-    counter=1
+    counter = 1
     for offer in r_dict['Offers']:
         merchant_list = [{
             'merchantId': merchant['merchantId'],
@@ -42,7 +42,7 @@ def get_merchant_offers(country_code):
             'merchantList': merchant_list,
             'redemptionUrl': offer['redemptionUrl']
         }
-        counter=counter+1
+        counter = counter + 1
         response.append(curr)
 
     return response

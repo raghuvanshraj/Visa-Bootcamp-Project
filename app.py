@@ -1,25 +1,22 @@
 import os
+import random
 
 from flask import Flask
-from flask import redirect, url_for, render_template, request, flash, session, jsonify
+from flask import redirect, url_for, render_template, request, flash, session
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, IntegerField, BooleanField
-from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
-from flask_login import login_user, login_required, logout_user, current_user, LoginManager
-from flask_bootstrap import Bootstrap
-import json
-import os
-import traceback
-import random
+from sqlalchemy.exc import OperationalError, IntegrityError
+from wtforms import StringField, SelectField, PasswordField
+from wtforms.validators import InputRequired, Length
+
+from visa_api import get_merchant_offers
 
 app = Flask(__name__)
 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c5778cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c5778cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
@@ -182,11 +179,10 @@ def login():
 def home():
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
-    offers=get_merchant_offers(current_user.country_code)
+    offers = get_merchant_offers(current_user.country_code)
     return render_template("home.html", segment_chosen=segment_chosen, offers=offers)
 
 
-from visa_api import get_merchant_offers
 @app.route('/claim_prize', methods=['POST'])
 @login_required
 def claim_prize():
@@ -194,7 +190,7 @@ def claim_prize():
     if current_user.points - 15 <= 0:
         flash("You have insufficient points")
         return redirect(url_for('home'))
-    
+
     segment_chosen = request.form['segment']
     points_left = current_user.points - 15
     current_user.points = points_left
@@ -220,13 +216,16 @@ def logout():
 
     return redirect(url_for('login'))
 
+
 @app.route('/rewards', methods=['GET'])
 def rewards():
-    data=""
+    data = ""
     if current_user.is_authenticated:
         return render_template("rewards.html", data=data)
     else:
-        return redirect( url_for('login'))
+        return redirect(url_for('login'))
+
+
 '''
 @app.route('/wheel', methods=['GET'])
 def wheel():
