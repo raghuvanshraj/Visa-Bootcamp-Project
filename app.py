@@ -75,7 +75,7 @@ class User(db.Model):
     country_code = db.Column('country_code', db.Integer)
 
     def get_id(self):
-        return (self.username)
+        return self.username
 
     def is_active(self):
         """True, as all users are active."""
