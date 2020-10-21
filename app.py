@@ -13,11 +13,14 @@ from flask_login import login_user, login_required, logout_user, current_user, L
 from flask_bootstrap import Bootstrap
 import json
 import os
+import traceback
 import random
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c577' \
-                                        '8cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c5778cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
@@ -40,14 +43,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
 login_manager.login_view = 'login'
-
-
-@login_manager.user_loader
-def load_user(username):
-    try:
-        return User.query.filter_by(username=username).first()
-    except:
-        return None
 
 
 @login_manager.user_loader
@@ -136,13 +131,15 @@ def register():
             db.session.add(new_user)
             db.session.add(new_user_credentials)
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
             flash('Username taken, please choose a new one')
             return redirect(url_for('register'))
         except OperationalError:
+            db.session.rollback()
             flash('Database server is down. Please contact the system administrator.')
         except Exception as e:
+            db.session.rollback()
             flash(str(e) + ". Please contact the system administrator.")
 
         login_user(new_user)
@@ -193,6 +190,10 @@ def home():
 @login_required
 def claim_prize():
     # Call Visa API to get offer based on the segment that the pointer points at on the wheel
+    if current_user.points - 15 <= 0:
+        flash("You have insufficient points")
+        return redirect(url_for('home'))
+    
     segment_chosen = request.form['segment']
     points_left = current_user.points - 15
     current_user.points = points_left
