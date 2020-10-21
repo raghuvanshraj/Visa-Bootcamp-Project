@@ -70,7 +70,7 @@ class User(db.Model):
     country_code = db.Column('country_code', db.Integer)
 
     def get_id(self):
-        return (self.username)
+        return self.username
 
     def is_active(self):
         """True, as all users are active."""
@@ -204,7 +204,7 @@ def claim_prize():
         flash('Something went wrong. Please try again.')
         return redirect(url_for('home'))
 
-    if (int(segment_chosen) == 4 or int(segment_chosen) == 8):
+    if int(segment_chosen) == 4 or int(segment_chosen) == 8:
         flash('Too bad! Try again')
     else:
         flash('You got segment ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')
