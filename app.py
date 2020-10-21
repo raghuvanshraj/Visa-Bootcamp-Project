@@ -1,13 +1,13 @@
 import os
 
 from flask import Flask
-from flask import redirect, url_for, render_template, request, flash, session,jsonify
+from flask import redirect, url_for, render_template, request, flash, session, jsonify
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, BooleanField
+from wtforms import StringField, SelectField, PasswordField, IntegerField, BooleanField
 from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_bootstrap import Bootstrap
@@ -21,6 +21,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
+
+# Country Codes
+COUNTRY_CODES = {
+    'Canada': 38,
+    'China': 44,
+    'Denmark': 58,
+    'Peru': 175,
+    'United Arab Emirates': 232,
+    'United States of America': 234
+}
 
 # Secret key for csrf
 SECRET_KEY = os.urandom(32)
@@ -66,12 +76,14 @@ class User(db.Model):
         """Return True if the user is authenticated."""
         return True
 
+
 # Forms
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired()])
     first_name = StringField('First Name', validators=[InputRequired()])
     last_name = StringField('Last Name', validators=[InputRequired()])
     email = StringField('Email', validators=[InputRequired()])
+    country = SelectField('Country', choices=list(COUNTRY_CODES.keys()), validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8)])
 
@@ -102,8 +114,8 @@ def register():
             first_name=registration_form.first_name.data,
             last_name=registration_form.last_name.data,
             email=registration_form.email.data,
-            # Give some starting points
-            points=500
+            points=0,
+            country_code=COUNTRY_CODES[registration_form.country.data]
         )
 
         new_user_credentials = UserCredentials(
@@ -127,7 +139,7 @@ def register():
             flash(str(e) + ". Please contact the system administrator.")
 
         login_user(new_user)
-        flash('Thank you for signing up! Please login')
+        # flash('Thank you for signing up! Please login')
         return redirect(url_for('login'))
 
     return render_template("register.html", registrationform=registration_form)
@@ -135,22 +147,12 @@ def register():
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
     registration_form = RegistrationForm()
     login_form = LoginForm()
 
     if login_form.validate_on_submit():
-        user_login = login_form.username.data
-        user=User.query.filter_by(username=user_login).first()
-        user_password = UserCredentials.query.filter_by(username=user_login).first().password
 
-        if user_password == login_form.password.data:
-            login_user(user)
-            session.permanent = True
-            print(user)
-            print("redirecting")
-            return redirect(url_for('home'))
-        else:
-            print("Please try again")
         username = login_form.username.data
         user = User.query.get(username)
         user_credentials = UserCredentials.query.get(username)
@@ -162,21 +164,24 @@ def login():
                 print("redirecting")
                 return redirect(url_for('home'))
             else:
-                print('some shit happened')
-
+                flash('Invalid credentials!')
+                print('Invalid credentials!')
+        else:
+            print("user credentials not found")
+            flash("user credentials not found")
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
 
-@app.route('/home', methods = ['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
-        
-    return render_template("Home.html", segment_chosen=segment_chosen)
+
+    return render_template("home.html", segment_chosen=segment_chosen)
 
 
-@app.route('/claim_prize', methods = ['POST'])
+@app.route('/claim_prize', methods=['POST'])
 @login_required
 def claim_prize():
     # Call Visa API to get offer based on the segment that the pointer points at on the wheel
@@ -193,9 +198,8 @@ def claim_prize():
         db.session.rollback()
         flash('Something went wrong. Please try again.')
         return redirect(url_for('home'))
-    
-    
-    if (int(segment_chosen)==4 or int(segment_chosen)==8):
+
+    if (int(segment_chosen) == 4 or int(segment_chosen) == 8):
         flash('Too bad! Try again')
     else:
         flash('You got segment ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')

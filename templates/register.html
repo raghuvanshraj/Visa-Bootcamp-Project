@@ -1,0 +1,127 @@
+
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "layouts/base.html"%}
+
+{%block title%}
+- Register
+{%endblock%}
+
+{%block css%}
+{%endblock%}
+
+{% block content %}
+
+<body class="bg-accpunt-pages">
+  <!-- HOME -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="wrapper-page">
+            <div class="account-pages">
+              <div class="account-box">
+                <div class="account-logo-box">
+                  <h2 class="text-uppercase text-center">
+                    <a href="{{url_for('login')}}" class="text-success">
+                      <span>
+                        <img src="../../static/assets/images/visa_icon.png" alt="" height="100"> </span>
+
+                      </a>
+                    </h2>
+                    <h5 class="text-uppercase font-bold m-b-5 ">Register</h5>
+                    <p class="m-b-0">Register as a new user</p>
+                  </div>
+                  <div class="account-content" style="padding-top: 15px;">
+                    <form class="form-horizontal" action="{{url_for('register')}}" method="POST">
+                      {{ registrationform.hidden_tag() }}
+                      <div class="form-group m-b-20 row">
+                        <div class="col-12">
+                        </div>
+                      </div>
+                      <div class="form-group row m-b-20">
+                        <div class="col-12 col-md-12">
+                          <div class="row">
+                            <div class="col-6 col-md-6">
+                              {{ wtf.form_field(registrationform.first_name)}}
+                            </div>
+                            <div class="col-6 col-md-6">
+                              {{ wtf.form_field(registrationform.last_name)}}
+                            </div>
+                          </div>
+                          {{ wtf.form_field(registrationform.username) }}
+                          {{ wtf.form_field(registrationform.email) }}
+                          {{ wtf.form_field(registrationform.country) }}
+
+                          <div class="row">
+                            <div class="col-6 col-md-6">
+                              {{ wtf.form_field(registrationform.password) }}
+                            </div>
+                            <div class="col-6 col-md-6">
+                              {{  wtf.form_field(registrationform.confirm_password)  }}
+                            </div>
+                          </div>
+
+
+                        </div>
+                      </div>
+                      <div class="form-group row text-center m-t-10">
+                        <div class="col-12">
+                          <button class="btn btn-md btn-block btn-primary loginbtn" type="submit">Create account</button>
+                        </div>
+
+                    <!--<div class="form-group row text-center m-t-10">
+                      <div class="col-12">
+                        <button class="btn btn-md btn-block btn-info loginbtn" type="submit">Send code</button>
+                      </div>-->
+                    </div>
+                  </form>
+                  <div class="col-12">
+
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class="alert alert-danger">
+                      {% for message in messages %}
+                      <h5>{{ message }}</h5>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                  </div>
+                  <!--<form class="form-horizontal" action="#">
+                    <div class="form-group m-b-20 row">
+                      <div class="col-12">
+                        <label for="emailaddress">Code Received</label>
+                        <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter 4 digits code" name="code"> </div>
+                    </div>
+                    <div class="form-group row text-center m-t-10">
+                      <div class="col-12">
+                        <button class="btn btn-md btn-block btn-primary loginbtn" type="submit">Create account</button>
+                      </div>
+                    </div>
+                  </form>-->
+                  <div class="row ">
+                    <div class="col-sm-12 text-center">
+                      <p class="text-muted">Already have an account?
+                        <a href="{{url_for('login')}}" class="text-dark m-l-5">
+                          <b>Sign In</b>
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- end card-box-->
+          </div>
+          <!-- end wrapper -->
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- END HOME -->
+  <script>
+    var resizefunc = [];
+  </script>
+</body>
+{%endblock %}

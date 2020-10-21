@@ -1,0 +1,87 @@
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "layouts/base.html"%}
+
+{%block title%}
+- Login
+{%endblock%}
+
+{%block css%}
+{%endblock%}
+
+{% block content %}
+<body  class="bg-accpunt-pages">
+
+
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="wrapper-page">
+            <div class="account-pages">
+              <div class="account-box">
+                <div class="account-logo-box">
+                  <h2 class="text-uppercase text-center">
+                    <a href="{{url_for('login')}}" class="text-success">
+                      <span>
+                        <img src="../static/assets/images/visa_icon.png" alt="" height="100"> </span>
+                      </a>
+                    </h2>
+                    <h5 class="text-uppercase font-bold m-b-5 ">Login</h5>
+                    <p class="m-b-0">Log in as an existing user</p>
+                  </div>
+                  <div class="account-content">
+                    <form class="form-horizontal" action="{{url_for('login')}}" method = "POST">
+                      {{ loginform.hidden_tag() }}
+                      <div class="form-group row m-b-20">
+                        <div class="col-12 col-md-12">
+
+                          {{ wtf.form_field(loginform.username) }}
+                          {{ wtf.form_field(loginform.password) }}
+                          <a href="{{url_for('register')}}" class="text-muted pull-right">
+                            <small>Don't have an account? Register here</small>
+                          </a>                        
+                        </div>
+                        
+                      </div>
+
+                      <div class="form-group row text-center m-t-10">
+                        <div class="col-12">
+                          <button class="btn btn-md btn-block btn-info loginbtn" type="submit">Login</button>
+                        </div>
+                      </div>
+                    </form>
+
+                    <div class="col-12">
+                      {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                      <div class="alert alert-danger">
+                        {% for message in messages %}
+                        <h5>{{ message }}</h5>
+                        {% endfor %}
+                      </div>
+                      {% endif %}
+                      {% endwith %}
+                    </div>
+                    <div class="row ">
+                      <div class="col-sm-12 text-center">
+                        <p class="text-muted">Don't have an account?
+                          <a href="{{url_for('register')}}" class="text-dark m-l-5">
+                            <b>Register</b>
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- end card-box-->
+            </div>
+            <!-- end wrapper -->
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </body>
+  {%endblock%}
