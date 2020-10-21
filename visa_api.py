@@ -3,7 +3,7 @@ import json
 import requests
 import os
 
-MAX_OFFERS = 6
+MAX_OFFERS = 100
 MERCHANT_API_URL = f'https://sandbox.api.visa.com/vmorc/offers/v1/all?&&max_offers={MAX_OFFERS}'
 
 

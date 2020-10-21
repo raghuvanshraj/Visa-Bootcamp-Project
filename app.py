@@ -8,6 +8,7 @@ from flask_login import login_user, login_required, logout_user, current_user, L
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from sqlalchemy.exc import OperationalError, IntegrityError
+from sqlalchemy import ForeignKey
 from wtforms import StringField, SelectField, PasswordField
 from wtforms.validators import InputRequired, Length
 
@@ -76,6 +77,13 @@ class User(db.Model):
     def is_authenticated(self):
         """Return True if the user is authenticated."""
         return True
+
+
+class UsersOffers(db.Model):
+    __tablename__ = 'users_offers'
+    hash_id = db.Column('hash_id', db.Integer, primary_key=True)
+    username = db.Column('username', db.Text, ForeignKey('user.username'))
+    offer_id = db.Column('offer_id', db.Integer)
 
 
 # Forms
@@ -162,7 +170,7 @@ def login():
             if user_credentials.password == login_form.password.data:
                 login_user(user)
                 session.permanent = True
-                print(user)
+                # print(user)
                 print("redirecting")
                 return redirect(url_for('home'))
             else:
@@ -177,17 +185,25 @@ def login():
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
+    print(current_user.country_code)
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
     offers = get_merchant_offers(current_user.country_code)
-    return render_template("home.html", segment_chosen=segment_chosen, offers=offers)
+    data = []
+    for offer in offers:
+        hash_id = hash(f'{current_user.username}#{offer["offerId"]}')
+        if UsersOffers.query.get(hash_id) is None:
+            data.append(offer)
+            if len(data) == 6:
+                break
+    return render_template("home.html", segment_chosen=segment_chosen, offers=data)
 
 
 @app.route('/claim_prize', methods=['POST'])
 @login_required
 def claim_prize():
     # Call Visa API to get offer based on the segment that the pointer points at on the wheel
-    if current_user.points - 15 <= 0:
+    if current_user.points - 15 < 0:
         flash("You have insufficient points")
         return redirect(url_for('home'))
 
@@ -219,7 +235,6 @@ def logout():
 
 @app.route('/rewards', methods=['GET'])
 def rewards():
-    data = ""
     if current_user.is_authenticated:
         return render_template("rewards.html", data=data)
     else:
