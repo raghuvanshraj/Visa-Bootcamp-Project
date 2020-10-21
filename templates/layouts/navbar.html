@@ -39,11 +39,11 @@
           <hr>
 
           <li class="nav-item">
-            <a class="nav-item nav-link" href="#"><i class="fa fa-bitcoin"></i> Your Points <span style="background-color: darkcyan;color: white;font-size: 12px;padding: 2px;padding-left: 5px;padding-right: 5px;border-radius: 20px;font-weight: 600;">{{ current_user.points}} </span></a>
+            <a class="nav-item nav-link" href="{{url_for('home')}}"><i class="fa fa-bitcoin"></i> Your Points <span style="background-color: darkcyan;color: white;font-size: 12px;padding: 2px;padding-left: 5px;padding-right: 5px;border-radius: 20px;font-weight: 600;">{{ current_user.points}} </span></a>
             <hr>
           </li>
           <li class="nav-item">
-            <a class="nav-item nav-link" href="#"><i class="fa fa-trophy"></i> Your Rewards</a>
+            <a class="nav-item nav-link" href="{{url_for('rewards')}}"><i class="fa fa-trophy"></i> Your Rewards</a>
             <hr>
           </li>
           <li class="nav-item">

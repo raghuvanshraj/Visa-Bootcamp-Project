@@ -217,32 +217,11 @@ def logout():
     return redirect(url_for('login'))
 
 
-'''
-@app.route('/wheel', methods=['GET'])
-def wheel():
+@app.route('/rewards', methods=['GET', 'POST'])
+@login_required
+def rewards():
+    return render_template('rewards.html')
 
-    is_submitted = "confirm" in request.form
-    
-    if is_submitted:
-        if current_user.points - 15 < 0:
-            flash('You do not have enough points.')
-            return redirect(url_for('wheel'))
-        
-        current_user.points = current_user.points - 15
-        
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            flash('Something went wrong. Please try again.')
-            return redirect(url_for('wheel'))
-        
-        flash('15 points have been deducted from your account')
-        return redirect(url_for('spinwheel'))
-    
-    
-    return render_template("wheel.html")
-'''
 
 if __name__ == '__main__':
     app.debug = True
