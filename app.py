@@ -219,7 +219,10 @@ def logout():
 
     return redirect(url_for('login'))
 
-
+@app.route('/rewards', methods=['GET'])
+def rewards():
+    data=""
+    return render_template("rewards.html", data=data)
 '''
 @app.route('/wheel', methods=['GET'])
 def wheel():
