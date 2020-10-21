@@ -64,6 +64,7 @@ class User(db.Model):
     first_name = db.Column('first_name', db.Text)
     last_name = db.Column('last_name', db.Text)
     points = db.Column('points', db.Integer)
+    country_code = db.Column('country_code', db.Integer)
 
     def get_id(self):
         return (self.username)
@@ -148,6 +149,7 @@ def register():
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        return redirect(url_for('home'))
     registration_form = RegistrationForm()
     login_form = LoginForm()
 
