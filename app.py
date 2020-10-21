@@ -222,7 +222,10 @@ def logout():
 @app.route('/rewards', methods=['GET'])
 def rewards():
     data=""
-    return render_template("rewards.html", data=data)
+    if current_user.is_authenticated:
+        return render_template("rewards.html", data=data)
+    else:
+        return redirect( url_for('login'))
 '''
 @app.route('/wheel', methods=['GET'])
 def wheel():
