@@ -31,6 +31,8 @@
                                 <h5 class="alert alert-danger">{{ message }}</h5>
                             {% elif message|length == 28 %}
                                 <h5 class="alert alert-danger">{{ message }}</h5>
+							{% elif message|length == 66 %}
+                                <h5 class="alert alert-danger">{{ message }}</h5>
                             {% else %}
                                 <h5 class="alert alert-success">{{ message }}</h5>
                             {% endif %}

@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask
 from flask import redirect, url_for, render_template, request, flash, session, jsonify
 from flask_bootstrap import Bootstrap
@@ -11,6 +9,7 @@ from wtforms import StringField, SelectField, PasswordField, IntegerField, Boole
 from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_bootstrap import Bootstrap
+from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
 import traceback
@@ -152,7 +151,7 @@ def login():
         return redirect(url_for('home'))
     registration_form = RegistrationForm()
     login_form = LoginForm()
-
+    
     if login_form.validate_on_submit():
 
         username = login_form.username.data
@@ -178,11 +177,15 @@ def login():
 @login_required
 def home():
     segment_chosen = random.randint(1, 8)
+    
     if current_user.points - 15 <= 0:
         # Assign segment_chosen to be a number outside of the available segments
         segment_chosen = 9
         flash("You have insufficient points")
-
+    
+    hashed_segment = generate_password_hash(str(segment_chosen), method='pbkdf2:sha256')
+    session['segment'] = hashed_segment
+    
     return render_template("home.html", segment_chosen=segment_chosen)
 
 
@@ -194,7 +197,18 @@ def claim_prize():
         flash("You have insufficient points")
         return redirect(url_for('home'))
     
+    # Check against HTML injection
     segment_chosen = request.form['segment']
+    hashed_segment = session.pop('segment')
+    
+    if not(check_password_hash(hashed_segment, segment_chosen)):
+        segment_chosen = '0'
+    
+    # User attempted HTML injection
+    if segment_chosen == '0':
+        flash('You attempted an injection attack. Authorities have been informed.')
+        return redirect(url_for('home'))
+    
     points_left = current_user.points - 15
     current_user.points = points_left
     try:
@@ -207,7 +221,7 @@ def claim_prize():
     if (int(segment_chosen) == 4 or int(segment_chosen) == 8):
         flash('Too bad! Try again')
     else:
-        flash('You got segment ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')
+        flash('You got Offer ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')
     return redirect(url_for('home'))
 
 
