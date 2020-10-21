@@ -1,27 +1,39 @@
 import os
 
-
 from flask import Flask
-from flask import redirect, url_for, render_template, request, flash, session,jsonify
+from flask import redirect, url_for, render_template, request, flash, session, jsonify
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
-from wtforms import StringField,SelectField, PasswordField, IntegerField, BooleanField
+from wtforms import StringField, SelectField, PasswordField, IntegerField, BooleanField
 from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_bootstrap import Bootstrap
 import json
 import os
+import traceback
 import random
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dkaalsgsvycdnw:b12fae3ad33a83367352a4b72ef8e5843703134eeaada07ef5' \
-                                        'dc890850b5b74b@ec2-54-160-202-3.compute-1.amazonaws.com:5432/d5ou4mml7frs0o'
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c5778cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
+
+# Country Codes
+COUNTRY_CODES = {
+    'Canada': 38,
+    'China': 44,
+    'Denmark': 58,
+    'Peru': 175,
+    'United Arab Emirates': 232,
+    'United States of America': 234
+}
 
 # Secret key for csrf
 SECRET_KEY = os.urandom(32)
@@ -40,12 +52,6 @@ def load_user(username):
     except:
         return None
 
-@login_manager.user_loader
-def load_user(username):
-    try:
-        return User.query.filter_by(username=username).first()
-    except:
-        return None
 
 # Tables
 class UserCredentials(db.Model):
@@ -61,6 +67,7 @@ class User(db.Model):
     first_name = db.Column('first_name', db.Text)
     last_name = db.Column('last_name', db.Text)
     points = db.Column('points', db.Integer)
+    country_code = db.Column('country_code', db.Integer)
 
     def get_id(self):
         return (self.username)
@@ -73,14 +80,14 @@ class User(db.Model):
         """Return True if the user is authenticated."""
         return True
 
+
 # Forms
 class RegistrationForm(FlaskForm):
-    myChoices= ["Canada", "china", "Denmark","Peru","United Arab Emirates","United State of America"]
     username = StringField('Username', validators=[InputRequired()])
     first_name = StringField('First Name', validators=[InputRequired()])
     last_name = StringField('Last Name', validators=[InputRequired()])
     email = StringField('Email', validators=[InputRequired()])
-    region = SelectField(u'Your Region', choices = myChoices, validators = [InputRequired()])
+    country = SelectField('Country', choices=list(COUNTRY_CODES.keys()), validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8)])
 
@@ -110,7 +117,9 @@ def register():
             username=registration_form.username.data,
             first_name=registration_form.first_name.data,
             last_name=registration_form.last_name.data,
-            email=registration_form.email.data
+            email=registration_form.email.data,
+            points=0,
+            country_code=COUNTRY_CODES[registration_form.country.data]
         )
 
         new_user_credentials = UserCredentials(
@@ -122,13 +131,15 @@ def register():
             db.session.add(new_user)
             db.session.add(new_user_credentials)
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
             flash('Username taken, please choose a new one')
             return redirect(url_for('register'))
         except OperationalError:
+            db.session.rollback()
             flash('Database server is down. Please contact the system administrator.')
         except Exception as e:
+            db.session.rollback()
             flash(str(e) + ". Please contact the system administrator.")
 
         login_user(new_user)
@@ -160,11 +171,10 @@ def login():
             else:
                 flash('Invalid credentials!')
                 print('Invalid credentials!')
-        else :
+        else:
             print("user credentials not found")
             flash("user credentials not found")
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
-
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -177,10 +187,13 @@ def home():
 
 
 @app.route('/claim_prize', methods=['POST'])
-
 @login_required
 def claim_prize():
     # Call Visa API to get offer based on the segment that the pointer points at on the wheel
+    if current_user.points - 15 <= 0:
+        flash("You have insufficient points")
+        return redirect(url_for('home'))
+    
     segment_chosen = request.form['segment']
     points_left = current_user.points - 15
     current_user.points = points_left
@@ -190,7 +203,6 @@ def claim_prize():
         db.session.rollback()
         flash('Something went wrong. Please try again.')
         return redirect(url_for('home'))
-
 
     if (int(segment_chosen) == 4 or int(segment_chosen) == 8):
         flash('Too bad! Try again')
@@ -207,7 +219,10 @@ def logout():
 
     return redirect(url_for('login'))
 
-
+@app.route('/rewards', methods=['GET'])
+def rewards():
+    data=""
+    return render_template("rewards.html", data=data)
 '''
 @app.route('/wheel', methods=['GET'])
 def wheel():
