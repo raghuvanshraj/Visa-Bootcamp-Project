@@ -2,7 +2,7 @@
 {% extends "layouts/base.html"%}
 
 {%block title%}
-  - Home
+- Home
 {%endblock%}
 
 {%block css%}
@@ -10,20 +10,9 @@
 {%endblock%}
 
 {% block content %}
-	<body>
-		<!-- <div class="add-list float-right">
-		
-			<form action="{{url_for('logout')}}" method="post">
-				<button type='submit' class="btn v8" style="width: 12em;background:#44d62c">
-					LOGOUT
-				</button>
-			</form>
-		</div> -->
-		
-		
-		
-		<div align="center">
-            {% with messages = get_flashed_messages() %}
+<body>
+    <div align="center">
+        {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     <div class="p-20">
                         {% for message in messages: %}
@@ -37,48 +26,212 @@
                                 <h5 class="alert alert-success">{{ message }}</h5>
                             {% endif %}
                         {% endfor %}
+					</div>
+				{% endif %}
+        {% endwith %}
+        <div class="row">
+            <div class="col-lg-6">
+
+                <table cellpadding="0" cellspacing="0" border="0" class="wheel-table">
+                    <tr>
+                        <td height="500" id="wheel-cell" class="the_wheel" align="center" valign="center">
+                            <canvas id="VisaWheel" width="350" height="350">
+                                <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please update your browser version or try another browser.</p>
+                            </canvas>
+                            <img id="prizePointer" src = "../static/assets/images/wheel_stuff/basic_pointer.png"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="power-container" align="center" valign="center">
+                            <div class="power_controls">
+                                <table class="power" cellpadding="10" cellspacing="0">
+                                    <tr>
+                                        <th class="power-table-cell" align="center" colspan="3">Power</th>
+                                    </tr>
+                                    <tr>
+                                        <td width="78" align="center" id="pw1" class="power-setting">Low</td>
+                                        <td width="78" align="center" id="pw2" class="power-setting">Med</td>
+                                        <td width="78" align="center" id="pw3" class="power-setting">High</td>
+                                    </tr>
+                                </table>
+                                <br />
+                                <img id="spin_button" src = "../static/assets/images/wheel_stuff/spin_off.png" alt="Spin"/>
+                                <div id="collect-prize" style="display: none">
+                                    <form action="{{url_for('claim_prize')}}" id="claim-prize" method="post">
+                                        <input type="hidden" id="prize" name='segment' value={{ segment_chosen }}>
+                                        <button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+            <style type="text/css">
+                .offer_card{
+                    padding: 10px;
+                }
+                .card{
+                        min-height: 92%;
+
+                }
+            </style>
+            <div class="col-lg-6">
+                <h1> Offers</h1>
+                <div class="row">
+                    {%for offer in offers:%}
+                    <div class="offer_card col-sm-6">
+                        <div class=" shadow p-3 mb-5 bg-white rounded card" >
+                            <div class="card-body">
+                                <h2>Offer {{offer.counter}}</h2>
+                                <h5 class="card-title">{{offer.offerTitle}}</h5>
+                                <!-- <h6 class="card-subtitle mb-2 text-muted">Online eCommerce</h6> -->
+                                <div>
+                                    {%for merchant in offer.merchantList%}
+                                     <h6 class="card-subtitle mb-2 text-muted">{{merchant.merchant}}</h6>
+                                    {%endfor%}
+                                </div>
+                                <p class="card-text">{{offer.offerShortDescription}}</p>
+                                
+
+                                <div style="text-align-last: start;">
+                                   You can redeem it :  
+                                    <ul>    
+                                    {% for redemptionChannel in offer.redemptionChannelList%}
+                                    <li>{{redemptionChannel.value}}</li>
+                                    {%endfor%}
+                                    </ul>
+                                </div>
+                                <div class="" style="    text-align-last: start;color: crimson;">
+                                    
+                                    <small>* {{offer.visaTerms}} </small><br>
+                                    <!-- <small>* valid only once per user</small><br> -->
+                                </div>
+                                <br>
+                                <br>
+                                <a href="{{offer.redemptionUrl}}" class="card-link">Redeem</a>
+                                <a href="#" class="card-link">See Details</a>
+                            </div>
+                        </div>
                     </div>
-                {% endif %}
-            {% endwith %}
-            <table cellpadding="0" cellspacing="0" border="0" class="wheel-table">
-                <tr>
-                    <td height="500" id="wheel-cell" class="the_wheel" align="center" valign="center">
-                        <canvas id="VisaWheel" width="350" height="350">
-                            <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please update your browser version or try another browser.</p>
-                        </canvas>
-                        <img id="prizePointer" src = "../static/assets/images/wheel_stuff/basic_pointer.png"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td id="power-container" align="center" valign="center">
-                        <div class="power_controls">
-                            <table class="power" cellpadding="10" cellspacing="0">
-                                <tr>
-                                    <th class="power-table-cell" align="center" colspan="3">Power</th>
-                                </tr>
-                                <tr>
-                                    <td width="78" align="center" id="pw1" class="power-setting">Low</td>
-                                    <td width="78" align="center" id="pw2" class="power-setting">Med</td>
-                                    <td width="78" align="center" id="pw3" class="power-setting">High</td>
-                                </tr>
-                            </table>
-                            <br />
-                            <img id="spin_button" src = "../static/assets/images/wheel_stuff/spin_off.png" alt="Spin"/>
-							<br>
-							<div id="collect-prize" style="display: none">
-								<form action="{{url_for('claim_prize')}}" id="claim-prize" method="post">
-									<input type="hidden" id="prize" name='segment' value={{ segment_chosen }}>
-									<button type="submit" name="confirm" id="claim-prize-button" class="btn btn-primary m-t-20 w-md">Collect Prize</button>
-								</form>
-							</div>
-						</div>
-                    </td>
-					<!-- <td cellpadding="10" ></td> -->
-                </tr>
-            </table>
+                    {%endfor%}
+                   <!--  <div class="offer_card col-sm-6">
+                        <div class="shadow p-3 mb-5 bg-white rounded card" >
+                           <div class="card-body">
+                            <h2>Offer 2</h2>
+                            
+                            <h5 class="card-title">Save  30%</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Domino's Pizza</h6>
+                            <p class="card-text">Get 30% off first order of the month  .</p>
+                            <div class="" style="    text-align-last: start;color: crimson;">
+                                <small>* valid till 1st nov,2020 </small><br>
+                                <small>* Minimum order $5 </small><br>
+                                <small>* valid only once per user</small><br>
+                            </div>
+                            <a href="#" class="card-link">Click Here</a>
+                            <a href="#" class="card-link">Get Offer</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="offer_card col-sm-6">
+                    <div class="shadow p-3 mb-5 bg-white rounded card" >
+                        <div class="card-body">
+                            <h2>Offer 3</h2>
+
+                            <h5 class="card-title">10% off</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">cafe coffee day</h6>
+                            <p class="card-text">Get a coupon of cafe coffee day.</p>
+                            <div class="" style="    text-align-last: start;color: crimson;">
+                                <small>* valid till 1st dec,2020 </small><br>
+                                <small>* valid only once per user</small><br>
+                                <small>* Min. order $1</small><br>
+                            </div>
+                            <a href="#" class="card-link">Show Coupon</a>
+                            <a href="#" class="card-link">Visit CCD</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="offer_card col-sm-6">
+                    <div class="shadow p-3 mb-5 bg-white rounded card" >
+                        <div class="card-body">
+                            <h2>Offer 4</h2>
+                            <h5 class="card-title">Save  20%</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">McDonald's</h6>
+                            <p class="card-text">Save 20% on purchase of minimum $25.</p>
+                            <div class="" style="text-align-last: start;color: crimson;">
+                                <small>* valid till 2nd nov,2020 </small><br>
+                                <small>* valid only for offline orders </small><br>
+                            </div>
+                            <a href="#" class="card-link">Show Coupon Here</a>
+                            <a href="#" class="card-link">Visite Website</a>
+                        </div>
+                    </div>
+                    
+                </div>
+                 <div class="offer_card col-sm-6">
+                        <div class="shadow p-3 mb-5 bg-white rounded card" >
+                           <div class="card-body">
+                            <h2>Offer 5</h2>
+                            
+                            <h5 class="card-title">Save  30%</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Domino's Pizza</h6>
+                            <p class="card-text">Get 30% off first order of the month  .</p>
+                            <div class="" style="    text-align-last: start;color: crimson;">
+                                <small>* valid till 1st nov,2020 </small><br>
+                                <small>* Minimum order $5 </small><br>
+                                <small>* valid only once per user</small><br>
+                            </div>
+                            <a href="#" class="card-link">Click Here</a>
+                            <a href="#" class="card-link">Get Offer</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="offer_card col-sm-6">
+                    <div class="shadow p-3 mb-5 bg-white rounded card" >
+                        <div class="card-body">
+                            <h2>Offer 6</h2>
+
+                            <h5 class="card-title">10% off</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">cafe coffee day</h6>
+                            <p class="card-text">Get a coupon of cafe coffee day.</p>
+                            <div class="" style="    text-align-last: start;color: crimson;">
+                                <small>* valid till 1st dec,2020 </small><br>
+                                <small>* valid only once per user</small><br>
+                                <small>* Min. order $1</small><br>
+                            </div>
+                            <a href="#" class="card-link">Show Coupon</a>
+                            <a href="#" class="card-link">Visit CCD</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="offer_card col-sm-6">
+                    <div class="shadow p-3 mb-5 bg-white rounded card" >
+                        <div class="card-body">
+                            <h2>Offer 7</h2>
+                            <h5 class="card-title">Save  20%</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">McDonald's</h6>
+                            <p class="card-text">Save 20% on purchase of minimum $25.</p>
+                            <div class="" style="text-align-last: start;color: crimson;">
+                                <small>* valid till 2nd nov,2020 </small><br>
+                                <small>* valid only for offline orders </small><br>
+                            </div>
+                            <a href="#" class="card-link">Show Coupon Here</a>
+                            <a href="#" class="card-link">Visite Website</a>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
         </div>
-	
-	</body>
+    </div>
+</div>
+
+</body>
 {%endblock%}
 
 {%block js%}
