@@ -143,7 +143,7 @@ def register():
             flash(str(e) + ". Please contact the system administrator.")
 
         login_user(new_user)
-        flash('Thank you for signing up! Please login')
+        # flash('Thank you for signing up! Please login')
         return redirect(url_for('login'))
 
     return render_template("register.html", registrationform=registration_form)
