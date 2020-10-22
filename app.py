@@ -277,7 +277,7 @@ def rewards():
         data.append(get_merchant_offers_by_offerid(offer.offer_id))
 
     if current_user.is_authenticated:
-        return render_template("rewards.html", data=data)
+        return render_template("rewards.html", rewards=data)
     else:
         return redirect(url_for('login'))
 
