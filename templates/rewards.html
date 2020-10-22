@@ -31,8 +31,43 @@
             }
         </style>
 
-        <h1> Rewards</h1>
+        <h1> Your Rewards</h1>
         <div class="row">
+            {%for reward in offers:%}
+            <div class="offer_card col-sm-6">
+                <div class=" shadow p-3 mb-5 bg-white rounded card" >
+                    <div class="card-body">
+                        <h2>reward {{reward.counter}}</h2>
+                        <h5 class="card-title">{{reward.offerTitle}}</h5>
+                        <!-- <h6 class="card-subtitle mb-2 text-muted">Online eCommerce</h6> -->
+                        <div>
+                            {%for merchant in reward.merchantList%}
+                            <h6 class="card-subtitle mb-2 text-muted">{{merchant.merchant}}</h6>
+                            {%endfor%}
+                        </div>
+                        <p class="card-text">{{reward.offerShortDescription}}</p>
+                        <div style="text-align-last: start;">
+                            You can redeem it :  
+                            <ul>    
+                                {% for redemptionChannel in reward.redemptionChannelList%}
+                                <li>{{redemptionChannel.value}}</li>
+                                {%endfor%}
+                            </ul>
+                        </div>
+                        <div class="" style="    text-align-last: start;color: crimson;">
+
+                            <small>* {{reward.visaTerms}} </small><br>
+                            <!-- <small>* valid only once per user</small><br> -->
+                        </div>
+                        <br>
+                        <br>
+                        <!-- <a href="{{reward.redemptionUrl}}" class="card-link">Redeem</a> -->
+                        <a href="#" class="card-link">See Details</a>
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+
             <div class="offer_card col-lg-3 col-md-6">
                 <div class=" shadow p-3 mb-5 bg-white rounded card" >
                     <div class="card-body">
@@ -45,7 +80,7 @@
                             <small>* valid only once per user</small><br>
                         </div>
                         <a href="#" class="card-link">Click Here</a>
-                        <a href="#" class="card-link">Get Offer</a>
+                        <a href="#" class="card-link">Get reward</a>
                     </div>
                 </div>
             </div>
@@ -63,7 +98,7 @@
                         <small>* valid only once per user</small><br>
                     </div>
                     <a href="#" class="card-link">Click Here</a>
-                    <a href="#" class="card-link">Get Offer</a>
+                    <a href="#" class="card-link">Get reward</a>
                 </div>
             </div>
         </div>
@@ -117,7 +152,7 @@
                     <small>* valid only once per user</small><br>
                 </div>
                 <a href="#" class="card-link">Click Here</a>
-                <a href="#" class="card-link">Get Offer</a>
+                <a href="#" class="card-link">Get reward</a>
             </div>
         </div>
     </div>
