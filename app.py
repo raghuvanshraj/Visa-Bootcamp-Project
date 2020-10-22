@@ -19,7 +19,7 @@ import random
 app = Flask(__name__)
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aisgjneunvgxfn:2462386080095a01a33b3e76685c3b48d2b0c759ee1a6c5778cf61a33ba212d1@ec2-54-156-149-189.compute-1.amazonaws.com:5432/d6til12h15on8a'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://nnxfxopdedshdl:7aa1ba04b58fcd9e92b515b82db39d54be090105d3c74ab14f500a9662b8dad9@ec2-52-21-247-176.compute-1.amazonaws.com:5432/d1q0santvsss6r'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
