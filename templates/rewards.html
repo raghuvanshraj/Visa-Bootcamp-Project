@@ -30,10 +30,45 @@
 
             }
         </style>
-
-        <h1> Rewards</h1>
+        <h1> Your Rewards</h1>
         <div class="row">
-            <div class="offer_card col-lg-3 col-md-6">
+            {% for rew in rewards:%}
+            {%for reward in rew:%}
+            <div class="offer_card col-lg-3  col-sm-6">
+                <div class=" shadow p-3 mb-5 bg-white rounded card" >
+                    <div class="card-body">
+                        <h2>reward {{reward.counter}}</h2>
+                        <h5 class="card-title">{{reward.offerTitle}}</h5>
+                        <!-- <h6 class="card-subtitle mb-2 text-muted">Online eCommerce</h6> -->
+                        <div>
+                            {%for merchant in reward.merchantList%}
+                            <h6 class="card-subtitle mb-2 text-muted">{{merchant.merchant}}</h6>
+                            {%endfor%}
+                        </div>
+                        <p class="card-text">{{reward.offerShortDescription}}</p>
+                        <div style="text-align-last: start;">
+                            You can redeem it :  
+                            <ul>    
+                                {% for redemptionChannel in reward.redemptionChannelList%}
+                                <li>{{redemptionChannel.value}}</li>
+                                {%endfor%}
+                            </ul>
+                        </div>
+                        <div class="" style="    text-align-last: start;color: crimson;">
+
+                            <small>* {{reward.visaTerms}} </small><br>
+                            <!-- <small>* valid only once per user</small><br> -->
+                        </div>
+                        <br>
+                        <br>
+                        <!-- <a href="{{reward.redemptionUrl}}" class="card-link">Redeem</a> -->
+                        <a href="#" class="card-link">See Details</a>
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+            {%endfor%}
+            <!-- <div class="offer_card col-lg-3 col-md-6">
                 <div class=" shadow p-3 mb-5 bg-white rounded card" >
                     <div class="card-body">
                         <h2>Reward 1</h2>
@@ -45,13 +80,13 @@
                             <small>* valid only once per user</small><br>
                         </div>
                         <a href="#" class="card-link">Click Here</a>
-                        <a href="#" class="card-link">Get Offer</a>
+                        <a href="#" class="card-link">Get reward</a>
                     </div>
                 </div>
             </div>
             <div class="offer_card col-lg-3 col-md-6">
                 <div class="shadow p-3 mb-5 bg-white rounded card" >
-                 <div class="card-body">
+                   <div class="card-body">
                     <h2>Reward 2</h2>
 
                     <h5 class="card-title">Save  30%</h5>
@@ -63,7 +98,7 @@
                         <small>* valid only once per user</small><br>
                     </div>
                     <a href="#" class="card-link">Click Here</a>
-                    <a href="#" class="card-link">Get Offer</a>
+                    <a href="#" class="card-link">Get reward</a>
                 </div>
             </div>
         </div>
@@ -95,7 +130,7 @@
                     <div class="" style="text-align-last: start;color: crimson;">
                         <small>* valid till 2nd nov,2020 </small><br>
                         <small>* valid only for offline orders </small><br>
-                        <!-- <small>* valid only once per user</small><br> -->
+                        
                     </div>
                     <a href="#" class="card-link">Show Coupon Here</a>
                     <a href="#" class="card-link">Visite Website</a>
@@ -105,60 +140,60 @@
         </div>
         <div class="offer_card col-lg-3 col-md-6">
             <div class="shadow p-3 mb-5 bg-white rounded card" >
-             <div class="card-body">
-                <h2>Reward 5</h2>
+                <div class="card-body">
+                    <h2>Reward 5</h2>
 
-                <h5 class="card-title">Save  30%</h5>
-                <h6 class="card-subtitle mb-2 text-muted">Domino's Pizza</h6>
-                <p class="card-text">Get 30% off first order of the month  .</p>
-                <div class="" style="    text-align-last: start;color: crimson;">
-                    <small>* valid till 1st nov,2020 </small><br>
-                    <small>* Minimum order $5 </small><br>
-                    <small>* valid only once per user</small><br>
+                    <h5 class="card-title">Save  30%</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Domino's Pizza</h6>
+                    <p class="card-text">Get 30% off first order of the month  .</p>
+                    <div class="" style="    text-align-last: start;color: crimson;">
+                        <small>* valid till 1st nov,2020 </small><br>
+                        <small>* Minimum order $5 </small><br>
+                        <small>* valid only once per user</small><br>
+                    </div>
+                    <a href="#" class="card-link">Click Here</a>
+                    <a href="#" class="card-link">Get reward</a>
                 </div>
-                <a href="#" class="card-link">Click Here</a>
-                <a href="#" class="card-link">Get Offer</a>
             </div>
         </div>
-    </div>
-    <div class="offer_card col-lg-3 col-md-6">
-        <div class="shadow p-3 mb-5 bg-white rounded card" >
-            <div class="card-body">
-                <h2>Reward 6</h2>
+        <div class="offer_card col-lg-3 col-md-6">
+            <div class="shadow p-3 mb-5 bg-white rounded card" >
+                <div class="card-body">
+                    <h2>Reward 6</h2>
 
-                <h5 class="card-title">10% off</h5>
-                <h6 class="card-subtitle mb-2 text-muted">cafe coffee day</h6>
-                <p class="card-text">Get a coupon of cafe coffee day.</p>
-                <div class="" style="    text-align-last: start;color: crimson;">
-                    <small>* valid till 1st dec,2020 </small><br>
-                    <small>* valid only once per user</small><br>
-                    <small>* Min. order $1</small><br>
+                    <h5 class="card-title">10% off</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">cafe coffee day</h6>
+                    <p class="card-text">Get a coupon of cafe coffee day.</p>
+                    <div class="" style="    text-align-last: start;color: crimson;">
+                        <small>* valid till 1st dec,2020 </small><br>
+                        <small>* valid only once per user</small><br>
+                        <small>* Min. order $1</small><br>
+                    </div>
+                    <a href="#" class="card-link">Show Coupon</a>
+                    <a href="#" class="card-link">Visit CCD</a>
                 </div>
-                <a href="#" class="card-link">Show Coupon</a>
-                <a href="#" class="card-link">Visit CCD</a>
             </div>
         </div>
-    </div>
-    <div class="offer_card col-lg-3 col-md-6">
-        <div class="shadow p-3 mb-5 bg-white rounded card" >
-            <div class="card-body">
-                <h2>Reward 7</h2>
-                <h5 class="card-title">Save  20%</h5>
-                <h6 class="card-subtitle mb-2 text-muted">McDonald's</h6>
-                <p class="card-text">Save 20% on purchase of minimum $25.</p>
-                <div class="" style="text-align-last: start;color: crimson;">
-                    <small>* valid till 2nd nov,2020 </small><br>
-                    <small>* valid only for offline orders </small><br>
-                    <!-- <small>* valid only once per user</small><br> -->
+        <div class="offer_card col-lg-3 col-md-6">
+            <div class="shadow p-3 mb-5 bg-white rounded card" >
+                <div class="card-body">
+                    <h2>Reward 7</h2>
+                    <h5 class="card-title">Save  20%</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">McDonald's</h6>
+                    <p class="card-text">Save 20% on purchase of minimum $25.</p>
+                    <div class="" style="text-align-last: start;color: crimson;">
+                        <small>* valid till 2nd nov,2020 </small><br>
+                        <small>* valid only for offline orders </small><br>
+
+                    </div>
+                    <a href="#" class="card-link">Show Coupon Here</a>
+                    <a href="#" class="card-link">Visite Website</a>
                 </div>
-                <a href="#" class="card-link">Show Coupon Here</a>
-                <a href="#" class="card-link">Visite Website</a>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 
-</div>
 </body>
 {%endblock%}
 

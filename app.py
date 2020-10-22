@@ -1,26 +1,22 @@
 import os
+import random
 
 from flask import Flask
-from flask import redirect, url_for, render_template, request, flash, session, jsonify
+from flask import redirect, url_for, render_template, request, flash, session
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import OperationalError, IntegrityError
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, IntegerField, BooleanField
-from wtforms.validators import InputRequired, Email, Length, Optional, ValidationError
-from flask_login import login_user, login_required, logout_user, current_user, LoginManager
-from flask_bootstrap import Bootstrap
-import json
-import os
-import traceback
-import random
+from sqlalchemy.exc import OperationalError, IntegrityError
+from sqlalchemy import ForeignKey
+from wtforms import StringField, SelectField, PasswordField
+from wtforms.validators import InputRequired, Length
+
+from visa_api import get_merchant_offers_by_country, get_merchant_offers_by_offerid
 
 app = Flask(__name__)
 
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://nnxfxopdedshdl:7aa1ba04b58fcd9e92b515b82db39d54be090105d3c74ab14f500a9662b8dad9@ec2-52-21-247-176.compute-1.amazonaws.com:5432/d1q0santvsss6r'
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
@@ -81,6 +77,13 @@ class User(db.Model):
         return True
 
 
+class UsersOffers(db.Model):
+    __tablename__ = 'users_offers'
+    hash_id = db.Column('hash_id', db.BigInteger, primary_key=True)
+    username = db.Column('username', db.Text, ForeignKey('user.username'))
+    offer_id = db.Column('offer_id', db.Integer)
+
+
 # Forms
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired()])
@@ -118,7 +121,7 @@ def register():
             first_name=registration_form.first_name.data,
             last_name=registration_form.last_name.data,
             email=registration_form.email.data,
-            points=0,
+            points=1000,
             country_code=COUNTRY_CODES[registration_form.country.data]
         )
 
@@ -143,7 +146,7 @@ def register():
             flash(str(e) + ". Please contact the system administrator.")
 
         login_user(new_user)
-        flash('Thank you for signing up! Please login')
+        # flash('Thank you for signing up! Please login')
         return redirect(url_for('login'))
 
     return render_template("register.html", registrationform=registration_form)
@@ -165,7 +168,7 @@ def login():
             if user_credentials.password == login_form.password.data:
                 login_user(user)
                 session.permanent = True
-                print(user)
+                # print(user)
                 print("redirecting")
                 return redirect(url_for('home'))
             else:
@@ -174,41 +177,85 @@ def login():
         else:
             print("user credentials not found")
             flash("user credentials not found")
+
     return render_template("login.html", registration_form=registration_form, loginform=login_form)
 
 
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
+    print(current_user.country_code)
     segment_chosen = random.randint(1, 8)
     print(segment_chosen)
-    offers=get_merchant_offers(current_user.country_code)
-    return render_template("home.html", segment_chosen=segment_chosen, offers=offers)
+    offers = get_merchant_offers_by_country(current_user.country_code)
+    data = []
+    counter = 1
+    for offer in offers:
+        hash_id = hash(f'{current_user.username}#{offer["offerId"]}')
+        if UsersOffers.query.get(hash_id) is None:
+            offer['counter'] = counter
+            counter += 1
+            data.append(offer)
+            if len(data) == 6:
+                break
+
+    session['offers'] = data
+    return render_template("home.html", segment_chosen=segment_chosen, offers=data)
 
 
-from visa_api import get_merchant_offers
 @app.route('/claim_prize', methods=['POST'])
 @login_required
 def claim_prize():
     # Call Visa API to get offer based on the segment that the pointer points at on the wheel
-    if current_user.points - 15 <= 0:
+    if current_user.points - 15 < 0:
         flash("You have insufficient points")
         return redirect(url_for('home'))
-    
+
     segment_chosen = request.form['segment']
     points_left = current_user.points - 15
     current_user.points = points_left
-    try:
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        flash('Something went wrong. Please try again.')
-        return redirect(url_for('home'))
+
+    if int(segment_chosen) != 4 and int(segment_chosen) != 8:
+        curr_segment = int(segment_chosen)
+        print(curr_segment)
+        if curr_segment >= 4:
+            curr_segment -= 1
+        offers = session['offers']
+        print(offers)
+        offer_id = None
+        for offer in offers:
+            if offer['counter'] == curr_segment:
+                offer_id = offer['offerId']
+                break
+
+        new_users_offers = UsersOffers(
+            hash_id=hash(f'{current_user.username}#{offer_id}'),
+            username=current_user.username,
+            offer_id=offer_id
+        )
+
+        print(new_users_offers.__dict__)
+
+        try:
+            db.session.add(new_users_offers)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('Selected offer is already claimed')
+        except OperationalError:
+            db.session.rollback()
+            flash('Database server not responding, please try later')
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            flash('Something went wrong. Please try again.')
+            return redirect(url_for('home'))
 
     if int(segment_chosen) == 4 or int(segment_chosen) == 8:
         flash('Too bad! Try again')
     else:
         flash('You got segment ' + segment_chosen + '. You have ' + str(points_left) + ' points left.')
+
     return redirect(url_for('home'))
 
 
@@ -220,13 +267,21 @@ def logout():
 
     return redirect(url_for('login'))
 
+
 @app.route('/rewards', methods=['GET'])
+@login_required
 def rewards():
-    data=""
+    data = []
+    offers = UsersOffers.query.filter_by(username=current_user.username).all()
+    for offer in offers:
+        data.append(get_merchant_offers_by_offerid(offer.offer_id))
+
     if current_user.is_authenticated:
-        return render_template("rewards.html", data=data)
+        return render_template("rewards.html", rewards=data)
     else:
-        return redirect( url_for('login'))
+        return redirect(url_for('login'))
+
+
 '''
 @app.route('/wheel', methods=['GET'])
 def wheel():
