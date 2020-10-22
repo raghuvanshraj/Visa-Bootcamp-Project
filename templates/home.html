@@ -13,13 +13,21 @@
 <body>
     <div align="center">
         {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <div class="p-20">
-            {% for message in messages: %}
-            <h5 class="alert alert-danger">{{ message }}</h5>
-            {% endfor %}
-        </div>
-        {% endif %}
+                {% if messages %}
+                    <div class="p-20">
+                        {% for message in messages: %}
+                            {% if message|length == 18%}
+                                <h5 class="alert alert-danger">{{ message }}</h5>
+                            {% elif message|length == 28 %}
+                                <h5 class="alert alert-danger">{{ message }}</h5>
+							{% elif message|length == 66 %}
+                                <h5 class="alert alert-danger">{{ message }}</h5>
+                            {% else %}
+                                <h5 class="alert alert-success">{{ message }}</h5>
+                            {% endif %}
+                        {% endfor %}
+					</div>
+				{% endif %}
         {% endwith %}
         <div class="row">
             <div class="col-lg-6">
@@ -77,23 +85,43 @@
             <div class="col-lg-6">
                 <h1> Offers</h1>
                 <div class="row">
+                    {%for offer in offers:%}
                     <div class="offer_card col-sm-6">
                         <div class=" shadow p-3 mb-5 bg-white rounded card" >
                             <div class="card-body">
-                                <h2>Offer 1</h2>
-                                <h5 class="card-title">Save  20%</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Online eCommerce</h6>
-                                <p class="card-text">Save 20% (up to $5) on purchase of minimum $25.</p>
-                                <div class="" style="    text-align-last: start;color: crimson;">
-                                    <small>* valid till 2nd nov,2020 </small><br>
-                                    <small>* valid only once per user</small><br>
+                                <h2>Offer {{offer.counter}}</h2>
+                                <h5 class="card-title">{{offer.offerTitle}}</h5>
+                                <!-- <h6 class="card-subtitle mb-2 text-muted">Online eCommerce</h6> -->
+                                <div>
+                                    {%for merchant in offer.merchantList%}
+                                     <h6 class="card-subtitle mb-2 text-muted">{{merchant.merchant}}</h6>
+                                    {%endfor%}
                                 </div>
-                                <a href="#" class="card-link">Click Here</a>
-                                <a href="#" class="card-link">Get Offer</a>
+                                <p class="card-text">{{offer.offerShortDescription}}</p>
+                                
+
+                                <div style="text-align-last: start;">
+                                   You can redeem it :  
+                                    <ul>    
+                                    {% for redemptionChannel in offer.redemptionChannelList%}
+                                    <li>{{redemptionChannel.value}}</li>
+                                    {%endfor%}
+                                    </ul>
+                                </div>
+                                <div class="" style="    text-align-last: start;color: crimson;">
+                                    
+                                    <small>* {{offer.visaTerms}} </small><br>
+                                    <!-- <small>* valid only once per user</small><br> -->
+                                </div>
+                                <br>
+                                <br>
+                                <!-- <a href="{{offer.redemptionUrl}}" class="card-link">Redeem</a> -->
+                                <a href="#" class="card-link">See Details</a>
                             </div>
                         </div>
                     </div>
-                    <div class="offer_card col-sm-6">
+                    {%endfor%}
+                   <!--  <div class="offer_card col-sm-6">
                         <div class="shadow p-3 mb-5 bg-white rounded card" >
                            <div class="card-body">
                             <h2>Offer 2</h2>
@@ -139,7 +167,6 @@
                             <div class="" style="text-align-last: start;color: crimson;">
                                 <small>* valid till 2nd nov,2020 </small><br>
                                 <small>* valid only for offline orders </small><br>
-                                <!-- <small>* valid only once per user</small><br> -->
                             </div>
                             <a href="#" class="card-link">Show Coupon Here</a>
                             <a href="#" class="card-link">Visite Website</a>
@@ -193,13 +220,12 @@
                             <div class="" style="text-align-last: start;color: crimson;">
                                 <small>* valid till 2nd nov,2020 </small><br>
                                 <small>* valid only for offline orders </small><br>
-                                <!-- <small>* valid only once per user</small><br> -->
                             </div>
                             <a href="#" class="card-link">Show Coupon Here</a>
                             <a href="#" class="card-link">Visite Website</a>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

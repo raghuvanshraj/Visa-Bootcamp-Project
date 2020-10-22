@@ -234,7 +234,7 @@ $(window).on('load', function() {
     // -------------------------------------------------------
     function resetWheel()
     {
-        document.getElementById('reset-button').style.display = "none";
+        // document.getElementById('reset-button').style.display = "none";
         theWheel.stopAnimation(false);  // Stop the animation, false as param so does not call callback function.
         theWheel.rotationAngle = 0;     // Re-set the wheel angle to 0 degrees.
         theWheel.draw();                // Call draw to render changes to the wheel.
@@ -251,7 +251,7 @@ $(window).on('load', function() {
         console.log(prize);
         //document.getElementById("prize").value = prize;
 		if (prize == "Try again") {
-			// Auto refreshes page
+			// Auto refresh page
 			$('#claim-prize-button').click();
 		} else {
 			// Shows claim prize button
